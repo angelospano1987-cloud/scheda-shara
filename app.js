@@ -787,5 +787,14 @@ async function bootSync(){
 openDay(state.dayId);
 bootSync();
 if(!lsWrite(lsAll())) setStatus("Attenzione: questo browser non permette di salvare i dati (navigazione privata?).");
-if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
+if("serviceWorker" in navigator && location.protocol==="https:"){
+  /* Quando si attiva una versione nuova dell'app la pagina si ricarica da sola, dopo aver salvato;
+     non alla prima installazione (nessun controller all'avvio) e non a metà di una modifica della scheda. */
+  const hadController=!!navigator.serviceWorker.controller; let refreshing=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    if(!hadController || refreshing || state.editing) return;
+    refreshing=true; if(saveTimer){ clearTimeout(saveTimer); saveNow(); } flushNotes(); location.reload();
+  });
+  navigator.serviceWorker.register("sw.js").then(r=>r.update()).catch(()=>{});
+}
 })();
