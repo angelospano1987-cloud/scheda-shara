@@ -1,0 +1,87 @@
+{
+ "fonte": "SCHEDA ALLENAMENTO.docx",
+ "sha256": "f5dabec82882ac0d1697b3107e31ed41db7e744c1b7e7718dc66daaa3628eb90",
+ "giorni": {
+  "Lunedì": [
+   {
+    "esercizio": "Hip thrust con bilanciere",
+    "serie_rip": "4 × 8",
+    "recupero": "90″"
+   },
+   {
+    "esercizio": "leg curl",
+    "serie_rip": "3 × 12 con 2 sec di isometria",
+    "recupero": "90″"
+   },
+   {
+    "esercizio": "Mezzo stacco rumeno con bilanciere",
+    "serie_rip": "4 × 8",
+    "recupero": "90″"
+   },
+   {
+    "esercizio": "Leg Press single leg",
+    "serie_rip": "3 X 12",
+    "recupero": "90″"
+   },
+   {
+    "esercizio": "Shoulder Press manubri o macchina con cavi (macchine isotoniche) + alzate laterali",
+    "serie_rip": "4 x 10 + 10",
+    "recupero": "90″"
+   }
+  ],
+  "Mercoledì": [
+   {
+    "esercizio": "Panca piana con manubri",
+    "serie_rip": "4 × 8",
+    "recupero": "90″"
+   },
+   {
+    "esercizio": "Aperture laterali (petto) panca inclinata a 45°",
+    "serie_rip": "3 x 12",
+    "recupero": "90″"
+   },
+   {
+    "esercizio": "Croci ai Cavi (una gamba avanti, busto inclinato, spalla 45°, braccio in estensione)",
+    "serie_rip": "4 × 10",
+    "recupero": "90″"
+   },
+   {
+    "esercizio": "Push down cavo corda (tricipidi)",
+    "serie_rip": "3 x 10",
+    "recupero": "90″"
+   },
+   {
+    "esercizio": "French Press con manubrio",
+    "serie_rip": "3 x 10",
+    "recupero": "90″"
+   }
+  ],
+  "Venerdì": [
+   {
+    "esercizio": "Leg press + leg extension",
+    "serie_rip": "3 × 10 + 10",
+    "recupero": "90″"
+   },
+   {
+    "esercizio": "Lat machine",
+    "serie_rip": "4 x 10",
+    "recupero": "90″"
+   },
+   {
+    "esercizio": "Rematore Singolo manubri",
+    "serie_rip": "3 x 12",
+    "recupero": "90″"
+   },
+   {
+    "esercizio": "Bic Curl con manubrio a zeta",
+    "serie_rip": "3 × 12",
+    "recupero": "90″"
+   },
+   {
+    "esercizio": "Panca inclinata a 60° bi curl",
+    "serie_rip": "3 x 10",
+    "recupero": "90″"
+   }
+  ]
+ }
+}

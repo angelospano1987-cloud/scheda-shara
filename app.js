@@ -1,127 +1,32 @@
 (function(){
 "use strict";
-
-/* Scheda di partenza: dati trascritti da "SCHEDA ALLENAMENTO.docx".
-   Video YouTube: ID letti dai risultati di ricerca e incorporabilita' verificata via oEmbed il 25.09.2026.
-   inc = incremento proposto in kg quando tutte le serie sono state completate. */
-const DEFAULT_DAYS = [
-  { id:"lun", name:"Lunedì", dow:1, plate:"var(--red)", focus:"Glutei, femorali, spalle",
-    warm:["Circonduzioni delle anche e affondi dinamici, 8 per lato","Ponte glutei a corpo libero, 12 ripetizioni","Good morning a corpo libero (mani sui fianchi), 10 ripetizioni","Circonduzioni delle spalle e apertura con elastico, 10 + 10"],
-    items:[
-      { id:"hip", sets:4, rest:90, note:"", parts:[
-        { name:"Hip thrust con bilanciere", short:"Hip thrust", reps:"8", inc:2.5,
-          v:[{id:"K2Q6hRKYpMI", ch:"Dieta Flessibile", d:"1:45"},{id:"IHk9Qn8ttX8", ch:"Project inVictus", d:"6:13"}],
-          cues:["Scapole appoggiate sul bordo della panca, bilanciere sulle anche con l'imbottitura.","Piedi alla larghezza delle anche: in alto le tibie devono essere verticali.","Spingi con i talloni e stringi i glutei 1 secondo in alto, bacino leggermente in retroversione.","Mento verso il petto: non inarcare la zona lombare."] } ] },
-      { id:"legcurl", sets:3, rest:90, note:"Con 2 sec di isometria.", parts:[
-        { name:"leg curl", short:"Leg curl", reps:"12", inc:2.5,
-          v:[{id:"1zevKZn_n1E", ch:"Project inVictus", d:"3:36"},{id:"sLsmkdBH3c8", ch:"Wepa Science", d:"1:01"}],
-          cues:["Ginocchio allineato al perno della macchina, rullo appena sopra il tallone.","Fletti fino in fondo e tieni la posizione 2 secondi.","Ritorno lento e controllato, senza lasciar cadere il peso.","Bacino fermo sul sedile: non sollevarlo per aiutarti."] } ] },
-      { id:"rdl", sets:4, rest:90, note:"", parts:[
-        { name:"Mezzo stacco rumeno con bilanciere", short:"Stacco", reps:"8", inc:2.5,
-          v:[{id:"w3BVJ0GyBnI", ch:"Lorenzo Gabrielli Coaching", d:"2:58"},{id:"_P3WyVBuSwA", ch:"Project Strength Genova", d:"0:45"}],
-          cues:["Parti in piedi, ginocchia leggermente flesse e ferme per tutta la serie.","Porta le anche indietro: il bilanciere scivola a contatto con le cosce.","Schiena neutra e scapole strette; scendi finché senti tirare i femorali (circa metà tibia).","Risali spingendo le anche in avanti e stringendo i glutei."] } ] },
-      { id:"lpsingle", sets:3, rest:90, note:"", parts:[
-        { name:"Leg Press single leg", short:"Leg press", reps:"12", inc:2.5,
-          v:[{id:"1v8w-I2FEoE", ch:"4fit Sport & Fitness", d:"0:15"},{id:"S6-h9rUZVOY", ch:"Project inVictus", d:"1:10"}],
-          cues:["Piede al centro della pedana, ginocchio in linea con la punta del piede.","Scendi finché il bacino resta appoggiato allo schienale.","Non bloccare il ginocchio in estensione completa.","Finisci tutte le ripetizioni con una gamba, poi cambia."] } ] },
-      { id:"spress", sets:4, rest:90, note:"Superserie: shoulder press e subito alzate laterali, poi recupero.", parts:[
-        { name:"Shoulder Press manubri o macchina con cavi (macchine isotoniche)", short:"Press", reps:"10", inc:2,
-          v:[{id:"fkW9CxGN4pk", ch:"Dieta Flessibile", d:"1:17"},{id:"AfIJ6VwYR5g", ch:"Project inVictus", d:"4:37"}],
-          cues:["Schienale quasi verticale, piedi ben appoggiati a terra.","Manubri all'altezza delle orecchie, gomiti leggermente in avanti.","Spingi verso l'alto senza far battere i manubri.","Addome contratto: la schiena non si inarca."] },
-        { name:"alzate laterali", short:"Alzate", reps:"10", inc:1,
-          v:[{id:"FDCwcG71Yi0", ch:"Umberto Miletto", d:"1:46"},{id:"9yg83KalYTo", ch:"GianzCoach", d:"9:29"}],
-          cues:["Busto appena inclinato in avanti, gomiti morbidi.","Sali fino all'altezza delle spalle guidando il movimento con i gomiti.","Niente slancio: scendi in circa 2 secondi.","Spalle basse, lontane dalle orecchie."] } ] }
-    ] },
-  { id:"mer", name:"Mercoledì", dow:3, plate:"var(--blue)", focus:"Petto e tricipiti",
-    warm:["Circonduzioni delle braccia avanti e indietro, 10 + 10","Rotazioni esterne con elastico, 12 per lato","Apertura toracica a quattro zampe (libro), 8 per lato","Piegamenti sulle ginocchia lenti, 8 ripetizioni"],
-    items:[
-      { id:"bench", sets:4, rest:90, note:"", parts:[
-        { name:"Panca piana con manubri", short:"Panca", reps:"8", inc:2,
-          v:[{id:"n8CskqpOPek", ch:"Project inVictus", d:"5:49"},{id:"ON0D6MmOVDo", ch:"Invictus Club Torino", d:"0:52"}],
-          cues:["Scapole strette e basse, piedi saldi a terra.","Parti con i manubri sopra le spalle.","Scendi ai lati del petto con i gomiti a circa 45–60° dal busto.","Spingi in alto avvicinando appena i manubri, polsi dritti."] } ] },
-      { id:"flyinc", sets:3, rest:90, note:"", parts:[
-        { name:"Aperture laterali (petto) panca inclinata a 45°", short:"Aperture", reps:"12", inc:1,
-          v:[{id:"d4rmg47U8HA", ch:"Dieta Flessibile", d:"0:57"},{id:"BwHw56WdXPQ", ch:"Davide Luna", d:"0:53"}],
-          cues:["Manubri sopra il petto, palmi rivolti uno verso l'altro.","Apri ad arco con i gomiti leggermente flessi e fermi.","Scendi finché senti allungare il petto, senza superare la linea delle spalle.","Richiudi stringendo il petto, non spingendo con le braccia."] } ] },
-      { id:"cablefly", sets:4, rest:90, note:"", parts:[
-        { name:"Croci ai Cavi (una gamba avanti, busto inclinato, spalla 45°, braccio in estensione)", short:"Croci", reps:"10", inc:2.5,
-          v:[{id:"V6kI05lcj-g", ch:"Francesco Russillo PT", d:"0:30"},{id:"d7B7bXZr26c", ch:"V Athlete", d:"7:34"}],
-          cues:["Un piede avanti per stabilità, busto inclinato in avanti.","Braccia quasi tese, come da scheda.","Porta le mani avanti e insieme descrivendo un arco, stringi 1 secondo.","Torna lentamente senza lasciare che il cavo ti tiri indietro le spalle."] } ] },
-      { id:"pushdown", sets:3, rest:90, note:"", parts:[
-        { name:"Push down cavo corda (tricipidi)", short:"Push down", reps:"10", inc:2.5,
-          v:[{id:"z-GYsUm3f9c", ch:"Project inVictus", d:"4:21"},{id:"vdwP7HxDAo4", ch:"Davide Morelli", d:"0:11"}],
-          cues:["Gomiti fermi, attaccati ai fianchi.","Spingi giù fino a braccia tese e apri la corda in fondo.","Risali fino a circa 90° senza sollevare i gomiti.","Busto fermo: niente oscillazioni."] } ] },
-      { id:"french", sets:3, rest:90, note:"", parts:[
-        { name:"French Press con manubrio", short:"French", reps:"10", inc:2,
-          v:[{id:"CHyjj0frj54", ch:"Vegan Coach", d:"1:09"},{id:"agVvU-OVZ-o", ch:"Lorenzo Gabrielli Coaching", d:"5:03"}],
-          cues:["Gomiti fermi e rivolti in alto: si muove solo l'avambraccio.","Scendi lento finché senti allungare il tricipite.","Estendi le braccia senza bloccare i gomiti di scatto.","Carico moderato: la tecnica viene prima del peso."] } ] }
-    ] },
-  { id:"ven", name:"Venerdì", dow:5, plate:"var(--yellow)", focus:"Gambe, dorso, bicipiti",
-    warm:["Squat a corpo libero lenti, 10 ripetizioni","Mobilità delle caviglie al muro, 10 per lato","Circonduzioni delle spalle e retrazione delle scapole, 10 + 10","Circonduzioni di polsi e gomiti, 10 per lato"],
-    items:[
-      { id:"legpress", sets:3, rest:90, note:"Superserie: leg press e subito leg extension, poi recupero.", parts:[
-        { name:"Leg press", short:"Press", reps:"10", inc:5,
-          v:[{id:"LMTyPl_oo38", ch:"Project inVictus", d:"3:55"},{id:"mAweueISnMI", ch:"Luigi Colbax", d:"5:48"}],
-          cues:["Piedi alla larghezza delle spalle, a metà pedana.","Scendi fino a circa 90° di ginocchio, bacino sempre appoggiato.","Ginocchia in linea con le punte dei piedi.","Non bloccare le ginocchia in alto."] },
-        { name:"leg extension", short:"Extension", reps:"10", inc:2.5,
-          v:[{id:"wRSr98kKUsg", ch:"Project inVictus", d:"5:34"},{id:"IZpKu3JyLKs", ch:"TrainingPedia", d:"2:01"}],
-          cues:["Regola lo schienale: ginocchio allineato al perno della macchina.","Rullo appoggiato sopra la caviglia.","Estendi fino in fondo e tieni 1 secondo.","Scendi lento, senza far toccare i pesi."] } ] },
-      { id:"lat", sets:4, rest:90, note:"", parts:[
-        { name:"Lat machine", short:"Lat", reps:"10", inc:2.5,
-          v:[{id:"zhCwrtIZaQk", ch:"Luigi Colbax", d:"1:38"},{id:"P8QKoy5sjv8", ch:"Project inVictus", d:"8:01"}],
-          cues:["Presa poco più larga delle spalle, cosce bloccate sotto i rulli.","Petto in fuori, busto appena inclinato indietro.","Tira la barra verso la parte alta del petto portando i gomiti giù e indietro.","Risali controllato fino ad allungare bene la schiena."] } ] },
-      { id:"row", sets:3, rest:90, note:"", parts:[
-        { name:"Rematore Singolo manubri", short:"Rematore", reps:"12", inc:2,
-          v:[{id:"-ebafKeAmXs", ch:"Project inVictus", d:"4:46"},{id:"1e-Ks7gpp44", ch:"Invictus Club Torino", d:"0:31"}],
-          cues:["Mano e ginocchio appoggiati sulla panca, schiena piatta.","Tira il manubrio verso l'anca, gomito vicino al corpo.","Il busto non ruota durante la tirata.","Scendi fino a braccio disteso, poi ripeti."] } ] },
-      { id:"ezcurl", sets:3, rest:90, note:"", parts:[
-        { name:"Bic Curl con manubrio a zeta", short:"Curl zeta", reps:"12", inc:2.5,
-          v:[{id:"6YH1xZZ43Vw", ch:"Project inVictus", d:"7:21"},{id:"7ECvCFpsOik", ch:"Daniele Esposito", d:"0:57"}],
-          cues:["Impugna il bilanciere sulle curve, alla larghezza delle spalle.","Gomiti fermi ai fianchi.","Sali senza slanciare il busto.","Scendi controllato fino quasi a braccia tese."] } ] },
-      { id:"inccurl", sets:3, rest:90, note:"", parts:[
-        { name:"Panca inclinata a 60° bi curl", short:"Curl 60°", reps:"10", inc:1,
-          v:[{id:"0o5foceYAnA", ch:"Project inVictus", d:"5:17"},{id:"rr2meFMsgSY", ch:"Dieta Flessibile", d:"1:51"}],
-          cues:["Braccia che pendono verticali, leggermente dietro il busto.","Fletti senza portare i gomiti in avanti.","Ruota il palmo verso l'alto mentre sali.","Scendi fino a braccio completamente disteso."] } ] }
-    ] }
-];
+/* Interfaccia di Scheda SHARA. La logica pura (scheda di partenza, unione dati, suggerimenti, record, settimana)
+   sta in core.js ed e' coperta dai test in tests/. */
+const C = window.SharaCore;
+const { DEFAULT_DAYS, clone, same, num, kgFmt, esc, isoOf, fmtDate, shortDate, mondayOf, addDays, targetReps, doseOf, ytId, live } = C;
 
 const $ = id => document.getElementById(id);
 const PLAY = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5v13l11-6.5z"/></svg>';
 const TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const CLOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>';
-const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const clone = o => JSON.parse(JSON.stringify(o));
-/* Confronto indipendente dall'ordine delle chiavi: due copie con gli stessi dati non devono sembrare diverse. */
-const canon = o => Array.isArray(o) ? "["+o.map(canon).join(",")+"]" : (o && typeof o==="object") ? "{"+Object.keys(o).sort().map(k=>JSON.stringify(k)+":"+canon(o[k])).join(",")+"}" : JSON.stringify(o===undefined?null:o);
-const same = (x,y) => canon(x)===canon(y);
-const num = x => { const n=parseFloat(String(x==null?"":x).replace(",",".")); return isFinite(n) ? n : null; };
-const kgFmt = n => (Math.round(n*10)/10).toLocaleString("it-IT");
-
-function isoOf(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
-function isoToday(){ return isoOf(new Date()); }
-function dateOf(iso){ const [y,m,d]=iso.split("-").map(Number); return new Date(y,m-1,d); }
-function fmtDate(iso){ return dateOf(iso).toLocaleDateString("it-IT",{weekday:"long",day:"numeric",month:"long"}); }
-function shortDate(iso){ return dateOf(iso).toLocaleDateString("it-IT",{day:"numeric",month:"short"}); }
-function mondayOf(iso){ const d=dateOf(iso); d.setDate(d.getDate()-((d.getDay()+6)%7)); return isoOf(d); }
-function addDays(iso,n){ const d=dateOf(iso); d.setDate(d.getDate()+n); return isoOf(d); }
+const isoToday = () => isoOf(new Date());
 function defaultDay(){ return ({0:"lun",1:"lun",2:"mer",3:"mer",4:"ven",5:"ven",6:"lun"})[new Date().getDay()]; }
 
-/* ---------- archivio sul dispositivo: pesi, note, scheda ---------- */
-const LS_KEY="shara-log-v1", NOTES_KEY="shara-notes-v1", PLAN_KEY="shara-plan-v1";
+/* ---------- archivio sul dispositivo: pesi, note, scheda, corpo ---------- */
+const LS_KEY="shara-log-v1", NOTES_KEY="shara-notes-v1", PLAN_KEY="shara-plan-v1", BODY_KEY="shara-body-v1";
 function lsGet(k,def){ try{ const o=JSON.parse(localStorage.getItem(k)||"null"); return (o && typeof o==="object")?o:def; }catch(e){ return def; } }
 function lsPut(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } }
 const lsAll = () => lsGet(LS_KEY,{});
 const lsWrite = all => lsPut(LS_KEY,all);
 const notesAll = () => lsGet(NOTES_KEY,{});
-function planGet(){ const p=lsGet(PLAN_KEY,null); return (p && Array.isArray(p.days) && p.days.length) ? p : {updated:"", days:clone(DEFAULT_DAYS)}; }
+const bodyAll = () => lsGet(BODY_KEY,{});
+function planGet(){ const p=lsGet(PLAN_KEY,null); return C.validPlan(p) ? p : {updated:"", days:clone(DEFAULT_DAYS), archive:[]}; }
+const localAll = () => ({log:lsAll(), notes:notesAll(), plan:lsGet(PLAN_KEY,null), body:bodyAll()});
 function setStatus(t){ $("status").textContent=t; }
-const live = d => d && !d.deleted && d.sets;
 
-const state = { date: isoToday(), dayId: defaultDay(), session:{}, last:{}, vidx:{}, plan: planGet(), editing:null };
+const state = { date: isoToday(), dayId: defaultDay(), session:{}, last:{}, vidx:{}, plan: planGet(), editing:null, view:"train", bodyField:"peso" };
 const days = () => state.plan.days;
 const dayOf = id => days().find(d=>d.id===id) || days()[0];
-const doseOf = it => it.sets+" × "+it.parts.map(p=>p.reps).join(" + ");
-const targetReps = p => { const n=parseInt(p.reps,10); return isFinite(n)&&n>0 ? n : null; };
 
 let saveTimer=null;
 function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveNow,500); }
@@ -159,40 +64,39 @@ function openDay(dayId){
   if(!state.session[day.id]) loadDay(day);
   renderDays(); renderHead(day); renderList(day); renderWeek();
 }
-function reloadAll(){ stopVideos(); state.session={}; state.last={}; openDay(state.dayId); }
+function reloadAll(){
+  stopVideos(); state.session={}; state.last={}; openDay(state.dayId);
+  if(state.view==="diary") renderDiary(); if(state.view==="body") renderBody();
+}
+
+/* ---------- viste: allenamento, diario, corpo ---------- */
+function setView(v){
+  if(state.editing && v!=="train") closeEditor();
+  state.view=v; stopVideos();
+  $("vTrain").hidden=v!=="train"; $("vDiary").hidden=v!=="diary"; $("vBody").hidden=v!=="body";
+  document.querySelectorAll(".vnav button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.view===v));
+  if(v==="diary") renderDiary(); if(v==="body") renderBody();
+  try{ sessionStorage.setItem("shara-view",v); }catch(e){}
+  window.scrollTo({top:0});
+}
+document.querySelector(".vnav").addEventListener("click",e=>{ const b=e.target.closest("button[data-view]"); if(b) setView(b.dataset.view); });
 
 /* ---------- riepilogo della settimana ---------- */
-/* Volume = somma di kg × ripetizioni delle serie spuntate; se le ripetizioni non sono scritte vale il numero previsto dalla scheda. */
 function allDocsLive(){
   const all=lsAll();
   for(const [dayId,ses] of Object.entries(state.session)) all[ses.date+"_"+dayId]=ses;
   return Object.values(all).filter(live);
 }
-function weekStats(monday,docs){
-  const end=addDays(monday,6), out={sessions:0,sets:0,volume:0,days:{}};
-  docs.forEach(d=>{
-    if(d.date<monday || d.date>end) return;
-    const day=days().find(x=>x.id===d.day); let done=0;
-    for(const [itId,rows] of Object.entries(d.sets)){
-      const it=day && day.items.find(x=>x.id===itId);
-      (rows||[]).forEach(r=>{ if(!r||!r.done) return; done++;
-        (r.kg||[]).forEach((k,pi)=>{ const kg=num(k); if(kg===null) return; const rp=num((r.reps||[])[pi]) ?? (it&&it.parts[pi]?targetReps(it.parts[pi]):null); if(rp) out.volume+=kg*rp; }); });
-    }
-    if(done){ out.sessions++; out.sets+=done; out.days[d.day]=true; }
-  });
-  return out;
-}
 function renderWeek(){
   const docs=allDocsLive(), mon=mondayOf(state.date);
-  const cur=weekStats(mon,docs), prev=weekStats(addDays(mon,-7),docs);
-  const weeks=Array.from({length:8},(_,i)=>{ const m=addDays(mon,-7*(7-i)); return {m, v:weekStats(m,docs).volume}; });
+  const cur=C.weekStats(mon,docs,days()), prev=C.weekStats(addDays(mon,-7),docs,days());
+  const weeks=Array.from({length:8},(_,i)=>{ const m=addDays(mon,-7*(7-i)); return {m, v:C.weekStats(m,docs,days()).volume}; });
   const maxV=Math.max(1,...weeks.map(w=>w.v));
-  const planned=days().length;
   $("week").innerHTML=
     '<div class="wk-head"><h2>Questa settimana</h2><span>dal '+shortDate(mon)+' al '+shortDate(addDays(mon,6))+'</span></div>'+
     '<div class="wk-days">'+days().map(d=>'<span class="wk-dot'+(cur.days[d.id]?' on':'')+'" style="--pc:'+d.plate+'" title="'+esc(d.name)+(cur.days[d.id]?': fatto':': da fare')+'"><i></i>'+esc(d.name.slice(0,3))+'</span>').join("")+'</div>'+
     '<div class="wk-kpi">'+
-      '<div><span>Allenamenti</span><b>'+cur.sessions+' di '+planned+'</b><small>scorsa: '+prev.sessions+'</small></div>'+
+      '<div><span>Allenamenti</span><b>'+cur.sessions+' di '+days().length+'</b><small>scorsa: '+prev.sessions+'</small></div>'+
       '<div><span>Serie</span><b>'+cur.sets+'</b><small>scorsa: '+prev.sets+'</small></div>'+
       '<div><span>Volume</span><b>'+kgFmt(Math.round(cur.volume))+' kg</b><small>scorsa: '+kgFmt(Math.round(prev.volume))+' kg</small></div>'+
     '</div>'+
@@ -200,24 +104,7 @@ function renderWeek(){
       '<div class="wk-bar'+(i===7?' cur':'')+'"><i style="height:'+Math.max(w.v?4:0,Math.round(w.v/maxV*100))+'%"></i><small>'+shortDate(w.m).replace(/\s.*/,"")+'</small></div>').join("")+'</div>';
 }
 
-/* ---------- carico suggerito ---------- */
-/* Doppia progressione: se l'ultima volta tutte le serie sono state spuntate e nessuna e' sotto le ripetizioni previste,
-   si propone il carico massimo usato + l'incremento dell'esercizio; altrimenti si resta al carico massimo. */
-function suggestion(day,it,pi){
-  const prev=dayDocs(day.id).filter(d=>d.date<state.date && Array.isArray(d.sets[it.id]) && d.sets[it.id].some(r=>r && num((r.kg||[])[pi])!==null))
-    .sort((a,b)=>a.date<b.date?1:-1)[0];
-  if(!prev) return null;
-  const rows=prev.sets[it.id].filter(Boolean), p=it.parts[pi], tgt=targetReps(p);
-  const kgs=rows.map(r=>num((r.kg||[])[pi])).filter(v=>v!==null);
-  const base=Math.max(...kgs), inc=num(p.inc)||2.5;
-  const allDone=rows.length>0 && rows.every(r=>r.done);
-  const short=rows.filter(r=>{ const rp=num((r.reps||[])[pi]); return tgt && rp!==null && rp<tgt; }).length;
-  if(allDone && !short) return {kg:base+inc, up:true, why:"il "+shortDate(prev.date)+" hai completato tutte le serie a "+kgFmt(base)+" kg"};
-  if(allDone) return {kg:base, up:false, why:short+(short===1?" serie è rimasta":" serie sono rimaste")+" sotto le "+tgt+" ripetizioni il "+shortDate(prev.date)};
-  return {kg:base, up:false, why:"il "+shortDate(prev.date)+" non hai completato tutte le serie"};
-}
-
-/* ---------- interfaccia ---------- */
+/* ---------- interfaccia del giorno ---------- */
 function renderDays(){
   $("days").innerHTML = days().map(d=>{
     const n=d.items.reduce((a,it)=>a+it.sets,0);
@@ -241,10 +128,21 @@ function videoBlock(it,p,pi){
     (vids.length>1?'<div class="vtabs" role="group" aria-label="Scegli il video">'+vids.map((v,k)=>'<button class="vtab" type="button" aria-pressed="'+(k===vi)+'" data-key="'+key+'" data-k="'+k+'">Video '+(k+1)+(v.d?' · '+esc(v.d):'')+'</button>').join("")+'</div>':'');
 }
 function suggHTML(day,it){
-  const out=it.parts.map((p,pi)=>{ const s=suggestion(day,it,pi); if(!s) return "";
+  const docs=dayDocs(day.id);
+  const out=it.parts.map((p,pi)=>{ const s=C.suggestion(docs,it,pi,state.date); if(!s) return "";
     return '<div class="sugg'+(s.up?' up':'')+'"><div><b>'+(it.parts.length>1?esc(p.short||p.name)+': ':'')+'oggi '+kgFmt(s.kg)+' kg'+(s.up?' ↑':'')+'</b><small>'+esc(s.why)+'</small></div>'+
       '<button class="lbtn sm" type="button" data-use="'+it.id+'" data-p="'+pi+'" data-kg="'+s.kg+'">Usa</button></div>'; }).join("");
   return out ? '<div class="suggs">'+out+'</div>' : "";
+}
+/* Record personali dell'esercizio e, se oggi ne batti uno, l'avviso. */
+function recordHTML(day,it){
+  const docs=dayDocs(day.id), rows=state.session[day.id].sets[it.id];
+  return it.parts.map((p,pi)=>{
+    const b=C.bests(docs,it,pi,state.date), r=C.recordToday(docs,it,pi,state.date,rows), lab=it.parts.length>1?esc(p.short||p.name)+': ':'';
+    const news = r ? '<div class="newrec" role="status"><b>Nuovo record'+(r.type==="kg"?' di carico: '+kgFmt(r.value)+' kg':' di massimale stimato: '+kgFmt(Math.round(r.value))+' kg')+'</b> (prima '+kgFmt(r.type==="kg"?r.prev:Math.round(r.prev))+' kg)</div>' : "";
+    const info = b.kg!==null ? '<div class="recinfo">'+lab+'record '+kgFmt(b.kg)+' kg il '+shortDate(b.kgDate)+(b.rm!==null?' · massimale stimato '+kgFmt(Math.round(b.rm))+' kg':'')+'</div>' : "";
+    return news+info;
+  }).join("");
 }
 function cellTxt(r,pi){ const k=num((r.kg||[])[pi]), rp=num((r.reps||[])[pi]); return k===null?"":kgFmt(k)+(rp!==null?"×"+rp:""); }
 function renderList(day){
@@ -284,6 +182,7 @@ function renderList(day){
       suggHTML(day,it)+
       parts+
       '<div class="sets">'+setRows+'</div>'+lastTxt+
+      '<div class="recs" id="rec-'+it.id+'">'+recordHTML(day,it)+'</div>'+
       '<label class="mynote"><span>Note personali</span><textarea rows="2" data-note="'+it.id+'" placeholder="Regolazioni, presa, sensazioni… (es. sedile al 4)">'+esc(note)+'</textarea></label>'+
       '<details class="hist" data-it="'+it.id+'"><summary>Storico pesi</summary><div class="hist-body"></div></details>'+
     '</article>';
@@ -325,6 +224,8 @@ $("list").addEventListener("input",e=>{
   if(clean!==t.value) t.value=clean;
   state.session[state.dayId].sets[t.dataset.it][+t.dataset.s][t.dataset.f][+t.dataset.p]=clean;
   scheduleSave();
+  const day=dayOf(state.dayId), it=day.items.find(x=>x.id===t.dataset.it), rec=$("rec-"+it.id);
+  if(rec) rec.innerHTML=recordHTML(day,it);
   const h=t.closest(".ex").querySelector("details.hist");
   if(h && h.open) fillHist(h);
 });
@@ -338,14 +239,14 @@ function histRows(dayId,it){
   return Object.keys(byDate).sort().map(date=>({date, rows:byDate[date].filter(Boolean)}))
     .filter(r=>r.rows.some(row=>(row.kg||[]).some(v=>num(v)!==null)));
 }
-function sparkline(points){
+function sparkline(points,unit,label){
   const W=300,H=96,L=34,R=10,T=12,B=22;
   const vals=points.map(p=>p.v), lo=Math.min(...vals), hi=Math.max(...vals), span=(hi-lo)||1;
   const x=i=>L+(points.length===1?(W-L-R)/2:i*(W-L-R)/(points.length-1));
   const y=v=>T+(H-T-B)*(1-(v-(hi===lo?lo-0.5:lo))/(hi===lo?1:span));
   const pts=points.map((p,i)=>x(i).toFixed(1)+","+y(p.v).toFixed(1)).join(" ");
   const lastI=points.length-1;
-  return '<svg class="spark" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Peso massimo per sessione, da '+kgFmt(vals[0])+' a '+kgFmt(vals[lastI])+' kg">'+
+  return '<svg class="spark" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(label||"Peso massimo per sessione")+', da '+kgFmt(vals[0])+' a '+kgFmt(vals[lastI])+' '+esc(unit||"kg")+'">'+
     '<line class="grid" x1="'+L+'" x2="'+(W-R)+'" y1="'+y(hi).toFixed(1)+'" y2="'+y(hi).toFixed(1)+'"/>'+
     '<line class="grid" x1="'+L+'" x2="'+(W-R)+'" y1="'+y(lo).toFixed(1)+'" y2="'+y(lo).toFixed(1)+'"/>'+
     '<text class="ax" x="'+(L-6)+'" y="'+(y(hi)+4).toFixed(1)+'" text-anchor="end">'+kgFmt(hi)+'</text>'+
@@ -356,22 +257,26 @@ function sparkline(points){
     (points.length>1?'<text class="ax" x="'+x(lastI).toFixed(1)+'" y="'+(H-6)+'" text-anchor="end">'+shortDate(points[lastI].date)+'</text>':'')+
   '</svg>';
 }
+function confirmBar(ask,what){
+  return ask ? '<div class="confirm" role="alert"><p>Eliminare '+what+' del <b>'+esc(fmtDate(ask))+'</b>? La cancellazione vale anche sugli altri dispositivi collegati.</p>'+
+    '<div class="row"><button class="lbtn danger" type="button" data-delsure="'+ask+'">Elimina</button><button class="lbtn" type="button" data-delno="1">Annulla</button></div></div>' : "";
+}
 function fillHist(det){
   const day=dayOf(state.dayId), it=day.items.find(x=>x.id===det.dataset.it);
   if(!it) return;
-  const rows=histRows(day.id,it), body=det.querySelector(".hist-body"), ask=det.dataset.confirm||"";
-  const confirmBar = ask ? '<div class="confirm" role="alert"><p>Eliminare l\'allenamento del <b>'+esc(fmtDate(ask))+'</b>? Si cancellano tutti gli esercizi di quel giorno, anche sugli altri dispositivi collegati.</p>'+
-    '<div class="row"><button class="lbtn danger" type="button" data-delsure="'+ask+'">Elimina</button><button class="lbtn" type="button" data-delno="1">Annulla</button></div></div>' : "";
-  if(!rows.length){ body.innerHTML=confirmBar+'<p class="hist-empty">Ancora nessun peso registrato per questo esercizio.</p>'; return; }
-  body.innerHTML=confirmBar+it.parts.map((p,pi)=>{
+  const rows=histRows(day.id,it), body=det.querySelector(".hist-body"), bar=confirmBar(det.dataset.confirm||"","l'allenamento (tutti gli esercizi)");
+  if(!rows.length){ body.innerHTML=bar+'<p class="hist-empty">Ancora nessun peso registrato per questo esercizio.</p>'; return; }
+  body.innerHTML=bar+it.parts.map((p,pi)=>{
     const pr=rows.map(r=>{ const kgs=r.rows.map(row=>num((row.kg||[])[pi])); return {date:r.date, rows:r.rows, max:Math.max(...kgs.filter(v=>v!==null))}; }).filter(r=>isFinite(r.max));
     if(!pr.length) return it.parts.length>1?'<p class="hist-empty">'+esc(p.name)+': nessun peso registrato.</p>':'';
     const first=pr[0], last=pr[pr.length-1], diff=last.max-first.max, best=Math.max(...pr.map(r=>r.max));
+    const rm=C.bests(dayDocs(day.id).concat([state.session[day.id]]),it,pi,null).rm;
     const trend = pr.length<2 ? "Prima sessione registrata" : (diff>0?"+":diff<0?"−":"±")+kgFmt(Math.abs(diff))+" kg dal "+shortDate(first.date);
     const nSets=Math.max(it.sets,...pr.map(r=>r.rows.length));
     return '<div class="hist-part">'+
       (it.parts.length>1?'<div class="part-name">'+esc(p.name)+'</div>':'')+
-      '<div class="hist-kpi"><div><span>Ultimo massimo</span><b>'+kgFmt(last.max)+' kg</b></div><div><span>Record</span><b>'+kgFmt(best)+' kg</b></div><div><span>Andamento</span><b class="'+(diff>0?'up':diff<0?'down':'')+'">'+trend+'</b></div></div>'+
+      '<div class="hist-kpi"><div><span>Ultimo massimo</span><b>'+kgFmt(last.max)+' kg</b></div><div><span>Record</span><b>'+kgFmt(best)+' kg</b></div><div><span>Massimale stimato</span><b>'+(rm!==null?kgFmt(Math.round(rm))+' kg':'—')+'</b></div></div>'+
+      '<p class="hist-legend">Andamento: <b class="'+(diff>0?'up':diff<0?'down':'')+'">'+trend+'</b>. Il massimale stimato (formula di Epley) è indicativo, non un test.</p>'+
       sparkline(pr.map(r=>({date:r.date,v:r.max})))+
       '<p class="hist-legend">Celle: kg × ripetizioni fatte (solo kg se le ripetizioni non sono state scritte).</p>'+
       '<div class="hist-tbl"><table><thead><tr><th>Data</th>'+Array.from({length:nSets},(_,s)=>'<th>S'+(s+1)+'</th>').join("")+'<th>Max</th>'+(pi===0?'<th><span class="sr">Elimina</span></th>':'')+'</tr></thead><tbody>'+
@@ -382,10 +287,10 @@ function fillHist(det){
   }).join("");
 }
 function deleteSession(dayId,date){
-  const all=lsAll(), now=new Date().toISOString();
-  all[date+"_"+dayId]={day:dayId, date, deleted:true, updated:now, sets:{}};
+  const all=lsAll();
+  all[date+"_"+dayId]={day:dayId, date, deleted:true, updated:new Date().toISOString(), sets:{}};
   lsWrite(all);
-  if(date===state.date){ clearTimeout(saveTimer); saveTimer=null; }
+  if(date===state.date && dayId===state.dayId){ clearTimeout(saveTimer); saveTimer=null; }
   reloadAll(); requestSync(500);
   setStatus("Allenamento del "+fmtDate(date)+" eliminato.");
 }
@@ -413,12 +318,12 @@ $("list").addEventListener("click",e=>{
   }
   const use=e.target.closest("[data-use]");
   if(use){
-    const it=dayOf(state.dayId).items.find(x=>x.id===use.dataset.use), pi=+use.dataset.p, kg=String(+use.dataset.kg);
+    const day=dayOf(state.dayId), it=day.items.find(x=>x.id===use.dataset.use), pi=+use.dataset.p, kg=String(+use.dataset.kg);
     let n=0; state.session[state.dayId].sets[it.id].forEach(r=>{ if(!r.kg[pi]){ r.kg[pi]=kg; n++; } });
     const art=use.closest(".ex");
     art.querySelectorAll('input[data-f="kg"][data-p="'+pi+'"]').forEach(inp=>{ inp.value=state.session[state.dayId].sets[it.id][+inp.dataset.s].kg[pi]; });
     use.textContent = n ? "Inserito" : "Già pieno";
-    if(n) scheduleSave();
+    if(n){ scheduleSave(); $("rec-"+it.id).innerHTML=recordHTML(day,it); }
     return;
   }
   const del=e.target.closest("[data-del]"), sure=e.target.closest("[data-delsure]"), no=e.target.closest("[data-delno]");
@@ -450,27 +355,111 @@ $("list").addEventListener("click",e=>{
   startTimer(it.rest,next);
 });
 
-/* ---------- modifica della scheda ---------- */
-function ytId(s){
-  s=String(s||"").trim(); if(!s) return "";
-  if(/^[A-Za-z0-9_-]{11}$/.test(s)) return s;
-  const m=s.match(/(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([A-Za-z0-9_-]{11})/);
-  return m ? m[1] : null;
+/* ---------- diario: ogni allenamento per data ---------- */
+/* Il nome di un esercizio si cerca nella scheda attuale e poi nell'archivio: un esercizio tolto dalla scheda resta leggibile. */
+function itemFor(dayId,itId){
+  const d=days().find(x=>x.id===dayId), it=d && d.items.find(x=>x.id===itId);
+  if(it) return it;
+  const arch=(state.plan.archive||[]).slice().reverse();
+  for(const a of arch){ const x=a.day && a.day.items && a.day.items.find(y=>y.id===itId); if(x) return x; }
+  return null;
 }
+let diaryConfirm="";
+function renderDiary(){
+  const all=lsAll();
+  for(const [dayId,ses] of Object.entries(state.session)) all[ses.date+"_"+dayId]=ses;
+  const docs=Object.values(all).filter(d=>live(d) && Object.values(d.sets).some(rows=>(rows||[]).some(r=>r && (r.done || (r.kg||[]).some(k=>num(k)!==null)))))
+    .sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:(a.day<b.day?-1:1));
+  if(!docs.length){ $("diaryList").innerHTML='<p class="hist-empty">Nessun allenamento registrato. Compare qui appena scrivi un peso o spunti una serie.</p>'; return; }
+  let month="";
+  $("diaryList").innerHTML=docs.map(d=>{
+    const day=days().find(x=>x.id===d.day), st=C.docStats(d,days()), key=d.date+"_"+d.day;
+    const m=C.dateOf(d.date).toLocaleDateString("it-IT",{month:"long",year:"numeric"});
+    const head = m!==month ? '<h3 class="dmonth">'+esc(m)+'</h3>' : ""; month=m;
+    const items=Object.entries(d.sets).map(([itId,rows])=>{
+      const it=itemFor(d.day,itId), parts=it?it.parts:[{name:itId}];
+      const cells=(rows||[]).filter(Boolean).map(r=>parts.map((_,pi)=>cellTxt(r,pi)).filter(Boolean).join(" + ")+(r.done?"":" (non spuntata)")).filter(x=>x && x!==" (non spuntata)");
+      return cells.length ? '<li><b>'+esc(parts.map(p=>p.name).join(" + "))+'</b><span>'+esc(cells.join(" · "))+'</span></li>' : "";
+    }).join("");
+    return head+'<details class="dentry" style="--pc:'+(day?day.plate:"var(--line)")+'"'+(diaryConfirm===key?' open':'')+'><summary><span class="ddot"></span><span class="dtitle">'+esc(fmtDate(d.date))+'</span><span class="dmeta">'+esc(day?day.name:d.day)+' · '+st.sets+' serie · '+kgFmt(Math.round(st.volume))+' kg</span></summary>'+
+      '<ul class="ditems">'+(items||'<li>Nessun peso scritto.</li>')+'</ul>'+
+      (diaryConfirm===key ? confirmBar(d.date,"l'allenamento").replace('data-delsure="'+d.date+'"','data-dsure="'+key+'"').replace('data-delno="1"','data-dno="1"')
+                          : '<div class="row"><button class="lbtn sm" type="button" data-dask="'+key+'">Elimina questo allenamento</button></div>')+
+    '</details>';
+  }).join("");
+}
+$("diaryList").addEventListener("click",e=>{
+  const ask=e.target.closest("[data-dask]"), sure=e.target.closest("[data-dsure]"), no=e.target.closest("[data-dno]");
+  if(ask){ diaryConfirm=ask.dataset.dask; renderDiary(); return; }
+  if(no){ diaryConfirm=""; renderDiary(); return; }
+  if(sure){ const [date,dayId]=sure.dataset.dsure.split("_"); diaryConfirm=""; deleteSession(dayId,date); renderDiary(); }
+});
+
+/* ---------- corpo: peso e misure ---------- */
+let bodyConfirm="";
+function renderBody(){
+  const body=bodyAll(), date=$("bDate").value||state.date, cur=body[date]&&!body[date].deleted?body[date]:{};
+  $("bFields").innerHTML=C.BODY_FIELDS.map(f=>'<label class="ef"><span>'+f.label+' ('+f.unit+')</span><input inputmode="decimal" autocomplete="off" data-bf="'+f.k+'" value="'+esc(cur[f.k]||"")+'" placeholder="—"></label>').join("");
+  $("bSel").innerHTML=C.BODY_FIELDS.map(f=>'<option value="'+f.k+'"'+(f.k===state.bodyField?' selected':'')+'>'+f.label+'</option>').join("");
+  const f=C.BODY_FIELDS.find(x=>x.k===state.bodyField), pts=C.bodySeries(body,f.k);
+  let chart='<p class="hist-empty">Ancora nessuna misura di '+f.label.toLowerCase()+'.</p>';
+  if(pts.length){
+    const first=pts[0], last=pts[pts.length-1], diff=last.v-first.v;
+    chart='<div class="hist-kpi"><div><span>Ultima</span><b>'+kgFmt(last.v)+' '+f.unit+'</b></div><div><span>Prima</span><b>'+kgFmt(first.v)+' '+f.unit+'</b></div><div><span>Variazione</span><b>'+(diff>0?"+":diff<0?"−":"±")+kgFmt(Math.abs(diff))+' '+f.unit+'</b></div></div>'+sparkline(pts,f.unit,f.label);
+  }
+  $("bChart").innerHTML=chart;
+  const rows=Object.values(body).filter(e=>e && !e.deleted && C.BODY_FIELDS.some(x=>num(e[x.k])!==null)).sort((a,b)=>a.date<b.date?1:-1);
+  $("bTable").innerHTML=(bodyConfirm?confirmBar(bodyConfirm,"le misure").replace('data-delsure=','data-bsure=').replace('data-delno="1"','data-bno="1"'):"")+
+    (rows.length?'<div class="hist-tbl"><table><thead><tr><th>Data</th>'+C.BODY_FIELDS.map(x=>'<th>'+x.label+'</th>').join("")+'<th><span class="sr">Elimina</span></th></tr></thead><tbody>'+
+    rows.map(e=>'<tr><td>'+shortDate(e.date)+'</td>'+C.BODY_FIELDS.map(x=>'<td>'+(num(e[x.k])!==null?kgFmt(num(e[x.k])):'—')+'</td>').join("")+'<td><button class="del" type="button" data-bdel="'+e.date+'" aria-label="Elimina le misure del '+esc(shortDate(e.date))+'">×</button></td></tr>').join("")+
+    '</tbody></table></div>':"");
+}
+$("bDate").addEventListener("change",()=>{ $("bMsg").textContent=""; renderBody(); });
+$("bSel").addEventListener("change",()=>{ state.bodyField=$("bSel").value; renderBody(); });
+$("bFields").addEventListener("input",e=>{ const t=e.target; if(t.dataset.bf){ const c=t.value.replace(",",".").replace(/[^0-9.]/g,""); if(c!==t.value) t.value=c; } });
+$("bSave").addEventListener("click",()=>{
+  const date=$("bDate").value; if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){ $("bMsg").textContent="Scegli una data valida."; return; }
+  const e={date, updated:new Date().toISOString()}, errs=[];
+  $("bFields").querySelectorAll("[data-bf]").forEach(inp=>{ const f=C.BODY_FIELDS.find(x=>x.k===inp.dataset.bf), v=num(inp.value);
+    if(inp.value.trim()==="") return; if(v===null||v<f.min||v>f.max) errs.push(f.label+": tra "+f.min+" e "+f.max+" "+f.unit); else e[f.k]=String(v); });
+  if(errs.length){ $("bMsg").textContent="Da correggere: "+errs.join("; ")+"."; return; }
+  if(!C.BODY_FIELDS.some(f=>e[f.k]!=null)){ $("bMsg").textContent="Scrivi almeno una misura."; return; }
+  const body=bodyAll(); body[date]=e; lsPut(BODY_KEY,body);
+  $("bMsg").textContent="Misure del "+fmtDate(date)+" salvate."; renderBody(); requestSync(1000);
+});
+$("bTable").addEventListener("click",e=>{
+  const d=e.target.closest("[data-bdel]"), s=e.target.closest("[data-bsure]"), n=e.target.closest("[data-bno]");
+  if(d){ bodyConfirm=d.dataset.bdel; renderBody(); return; }
+  if(n){ bodyConfirm=""; renderBody(); return; }
+  if(s){ const body=bodyAll(); body[s.dataset.bsure]={date:s.dataset.bsure, deleted:true, updated:new Date().toISOString()}; lsPut(BODY_KEY,body); bodyConfirm=""; renderBody(); requestSync(500); }
+});
+
+/* ---------- modifica della scheda, con archivio delle versioni ---------- */
 const newId = () => "x"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const blankPart = () => ({name:"",short:"",reps:"10",inc:2.5,v:[],cues:[]});
+const vidRaw = (p,k) => p.vraw ? (p.vraw[k]||"") : (p.v&&p.v[k] ? "https://youtu.be/"+p.v[k].id : "");
 function openEditor(){
   stopVideos();
-  state.editing={dayId:state.dayId, draft:clone(dayOf(state.dayId)), confirm:""};
+  state.editing={dayId:state.dayId, draft:clone(dayOf(state.dayId)), confirm:"", showArch:""};
   $("list").hidden=true; $("editor").hidden=false; $("bEdit").hidden=true;
   renderEditor(); window.scrollTo({top:$("focusRow").offsetTop-10});
 }
 function closeEditor(){ state.editing=null; $("editor").hidden=true; $("list").hidden=false; $("bEdit").hidden=false; $("editor").innerHTML=""; }
 function fld(label,attrs,val,cls){ return '<label class="ef'+(cls?' '+cls:'')+'"><span>'+label+'</span><input '+attrs+' value="'+esc(val)+'"></label>'; }
+function archiveHTML(){
+  const ed=state.editing, list=(state.plan.archive||[]).filter(a=>a.dayId===ed.dayId).slice().reverse();
+  if(!list.length) return '<p class="hist-empty">Nessuna versione precedente: la prima comparirà qui dopo un salvataggio.</p>';
+  return '<ul class="arch">'+list.map(a=>{
+    const when=new Date(a.savedAt).toLocaleString("it-IT",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});
+    return '<li><div class="arch-h"><span>Sostituita il '+esc(when)+' · '+a.day.items.length+' esercizi</span>'+
+      '<span class="row"><button class="lbtn sm" type="button" data-archshow="'+a.id+'">'+(ed.showArch===a.id?'Nascondi':'Mostra')+'</button><button class="lbtn sm" type="button" data-archload="'+a.id+'">Ripristina</button></span></div>'+
+      (ed.showArch===a.id?'<ol class="arch-items">'+a.day.items.map(it=>'<li>'+esc(it.parts.map(p=>p.name).join(" + "))+' <span>'+esc(doseOf(it))+' · '+it.rest+'″</span></li>').join("")+'</ol>':'')+'</li>';
+  }).join("")+'</ul>';
+}
 function renderEditor(msg){
   const ed=state.editing, d=ed.draft;
   $("editor").innerHTML=
-    '<div class="ed-top"><h2>Modifica scheda · '+esc(d.name)+'</h2><p>Le modifiche valgono da oggi e si sincronizzano sugli altri dispositivi. Lo storico resta.</p></div>'+
+    '<div class="ed-top"><h2>Modifica scheda · '+esc(d.name)+'</h2><p>Le modifiche valgono da oggi e si sincronizzano sugli altri dispositivi. Lo storico resta, e la versione che sostituisci finisce nell\'archivio qui sotto.</p></div>'+
     (msg?'<p class="ed-msg" role="alert">'+esc(msg)+'</p>':'')+
     fld("Gruppi muscolari del giorno",'data-e="focus"',d.focus,"wide")+
     '<label class="ef wide"><span>Riscaldamento (una voce per riga)</span><textarea rows="4" data-e="warm">'+esc((d.warm||[]).join("\n"))+'</textarea></label>'+
@@ -500,11 +489,11 @@ function renderEditor(msg){
       '</fieldset>').join("")+
     '<div class="row"><button class="lbtn" type="button" data-add="1">+ Aggiungi esercizio</button></div>'+
     '<div class="row ed-save"><button class="lbtn primary" type="button" data-save="1">Salva scheda</button><button class="lbtn" type="button" data-cancel="1">Annulla</button></div>'+
+    '<section class="ed-arch"><h3>Schede precedenti di '+esc(d.name.toLowerCase())+'</h3>'+archiveHTML()+'</section>'+
     '<div class="row">'+(ed.confirm==="reset"?'<button class="lbtn sm danger" type="button" data-reset="sure">Conferma: torna alla scheda originale di '+esc(d.name.toLowerCase())+'</button>':'<button class="lbtn sm" type="button" data-reset="ask">Ripristina la scheda originale del giorno</button>')+'</div>';
 }
 /* Legge i campi nella bozza cosi' come sono scritti (testo), senza validare: ridisegnare l'editor dopo
    un'aggiunta o uno spostamento deve mostrare cio' che e' stato digitato. La validazione avviene al salvataggio. */
-const vidRaw = (p,k) => p.vraw ? (p.vraw[k]||"") : (p.v&&p.v[k] ? "https://youtu.be/"+p.v[k].id : "");
 function readEditor(){
   const d=state.editing.draft;
   $("editor").querySelectorAll("[data-e]").forEach(el=>{
@@ -544,11 +533,14 @@ function commitEditor(){
   });
   if(!d.items.length) errs.push("Il giorno deve avere almeno un esercizio.");
   if(errs.length){ renderEditor(errs[0]+(errs.length>1?" (e altri "+(errs.length-1)+" da correggere)":"")); return; }
-  const plan=clone(state.plan); plan.days=plan.days.map(x=>x.id===d.id?d:x); plan.updated=new Date().toISOString();
+  if(same(d,orig)){ closeEditor(); setStatus("Nessuna modifica alla scheda."); return; }
+  const now=new Date().toISOString();
+  let plan=C.archivePush(state.plan,d.id,orig,now);
+  plan.days=plan.days.map(x=>x.id===d.id?d:x); plan.updated=now;
   if(saveTimer){ clearTimeout(saveTimer); saveNow(); }
   state.plan=plan; lsPut(PLAN_KEY,plan);
   closeEditor(); reloadAll(); requestSync(500);
-  setStatus("Scheda di "+d.name.toLowerCase()+" salvata.");
+  setStatus("Scheda di "+d.name.toLowerCase()+" salvata. La versione precedente è nell'archivio.");
 }
 $("bEdit").addEventListener("click",openEditor);
 $("editor").addEventListener("click",e=>{
@@ -563,6 +555,8 @@ $("editor").addEventListener("click",e=>{
   else if(b.dataset.rmask!=null){ ed.confirm="item"+b.dataset.rmask; }
   else if(b.dataset.rm!=null){ items.splice(+b.dataset.rm,1); ed.confirm=""; }
   else if(b.dataset.add){ items.push({id:newId(),sets:3,rest:90,note:"",parts:[blankPart()]}); ed.confirm=""; }
+  else if(b.dataset.archshow){ ed.showArch = ed.showArch===b.dataset.archshow ? "" : b.dataset.archshow; }
+  else if(b.dataset.archload){ const a=(state.plan.archive||[]).find(x=>x.id===b.dataset.archload); if(a){ ed.draft=clone(a.day); ed.confirm=""; renderEditor("Versione archiviata caricata: premi «Salva scheda» per rimetterla in uso."); return; } }
   else if(b.dataset.reset==="ask"){ ed.confirm="reset"; }
   else if(b.dataset.reset==="sure"){ ed.draft=clone(DEFAULT_DAYS.find(x=>x.id===ed.dayId)); ed.confirm=""; renderEditor("Scheda originale ricaricata: premi «Salva scheda» per confermarla."); return; }
   renderEditor();
@@ -571,7 +565,7 @@ $("editor").addEventListener("click",e=>{
 /* ---------- copia dei dati ---------- */
 $("bExport").addEventListener("click",()=>{
   flushNotes();
-  const blob=new Blob([JSON.stringify({app:"scheda-shara",version:2,exported:new Date().toISOString(),log:lsAll(),notes:notesAll(),plan:lsGet(PLAN_KEY,null)},null,1)],{type:"application/json"});
+  const blob=new Blob([JSON.stringify(Object.assign({app:"scheda-shara",version:3,exported:new Date().toISOString()},localAll()),null,1)],{type:"application/json"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="scheda-shara-"+state.date+".json";
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
   setStatus("Copia esportata: tienila nei tuoi file per ripristinarla su un altro dispositivo.");
@@ -581,7 +575,7 @@ $("bImport").addEventListener("change",async e=>{
   try{
     const j=JSON.parse(await f.text());
     if(!j || j.app!=="scheda-shara" || typeof j.log!=="object") throw new Error("formato");
-    const before=lsAll(), m=mergeAll({log:before,notes:notesAll(),plan:lsGet(PLAN_KEY,null)},{log:j.log,notes:j.notes||{},plan:j.plan||null});
+    const before=lsAll(), m=C.mergeAll(localAll(),{log:j.log,notes:j.notes||{},plan:j.plan||null,body:j.body||{}});
     const n=Object.keys(m.log).filter(k=>!same(m.log[k],before[k])).length;
     if(!writeAll(m)) throw new Error("memoria");
     reloadAll();
@@ -589,12 +583,62 @@ $("bImport").addEventListener("change",async e=>{
     requestSync(500);
   }catch(err){ setStatus("Importazione non riuscita: il file non è una copia di Scheda SHARA."); }
 });
+function writeAll(m){
+  const ok=lsWrite(m.log) && lsPut(NOTES_KEY,m.notes) && lsPut(BODY_KEY,m.body||{}) && (m.plan ? lsPut(PLAN_KEY,m.plan) : true);
+  state.plan=planGet();
+  return ok;
+}
+
+/* ---------- notifica di fine recupero a schermo bloccato ----------
+   Il servizio (push-worker/) riceve l'orario di fine e manda una push; senza servizio configurato resta spenta. */
+const PUSH_URL=String(window.SHARA_PUSH_URL||"").replace(/\/+$/,""), VAPID_KEY=String(window.SHARA_VAPID_KEY||"");
+const PUSH_KEY="shara-push", DEV_KEY="shara-device";
+function deviceId(){ let id=null; try{ id=localStorage.getItem(DEV_KEY); if(!id){ id="d"+crypto.getRandomValues(new Uint32Array(3)).join("").slice(0,20); localStorage.setItem(DEV_KEY,id); } }catch(e){} return id; }
+const pushSub = () => lsGet(PUSH_KEY,null);
+function unb64(s){ const b=atob(s.replace(/-/g,"+").replace(/_/g,"/")+"===".slice((s.length+3)%4)); return Uint8Array.from(b,c=>c.charCodeAt(0)); }
+function pushCall(path,body){
+  return fetch(PUSH_URL+path,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(body),keepalive:true})
+    .then(r=>{ if(!r.ok) throw new Error("HTTP "+r.status); return r; });
+}
+function pushSchedule(at){ const s=pushSub(); if(!s || !PUSH_URL) return; pushCall("/schedule",{id:deviceId(), sub:{endpoint:s.endpoint}, at:Math.round(at)}).catch(()=>renderPush("La notifica di fine recupero non è stata programmata: servizio non raggiungibile. Il timer in pagina funziona comunque.")); }
+function pushCancel(){ if(!pushSub() || !PUSH_URL) return; pushCall("/cancel",{id:deviceId()}).catch(()=>{}); }
+function renderPush(msg){
+  const cfg=!!(PUSH_URL && VAPID_KEY), sup=("serviceWorker" in navigator) && ("PushManager" in window) && ("Notification" in window), on=!!pushSub();
+  $("pushOn").hidden=!cfg||!sup||on; $("pushOff").hidden=!on;
+  $("pushMsg").textContent = msg || (!cfg ? "Non ancora attiva: il servizio di notifica non è configurato in questa versione." :
+    !sup ? (/iPhone|iPad/.test(navigator.userAgent) ? "Sull'iPhone la notifica funziona solo aprendo l'app dall'icona nella schermata Home (iOS 16.4 o successivo)." : "Questo browser non supporta le notifiche push.") :
+    on ? "Attiva su questo dispositivo: a fine recupero arriva una notifica anche a schermo bloccato." : "A fine recupero una notifica anche a schermo bloccato o con un'altra app aperta.");
+}
+$("pushOn").addEventListener("click",async()=>{
+  try{
+    const perm=await Notification.requestPermission();
+    if(perm!=="granted"){ renderPush("Permesso negato: le notifiche si riattivano dalle impostazioni del telefono per questa app."); return; }
+    const reg=await navigator.serviceWorker.ready;
+    const sub=await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:unb64(VAPID_KEY)});
+    lsPut(PUSH_KEY,{endpoint:sub.endpoint, created:new Date().toISOString()});
+    renderPush();
+  }catch(e){ renderPush("Attivazione non riuscita ("+(e&&e.message||e)+")."); }
+});
+$("pushOff").addEventListener("click",async()=>{
+  pushCancel();
+  try{ const reg=await navigator.serviceWorker.ready; const s=await reg.pushManager.getSubscription(); if(s) await s.unsubscribe(); }catch(e){}
+  try{ localStorage.removeItem(PUSH_KEY); }catch(e){}
+  renderPush("Notifica disattivata su questo dispositivo.");
+});
+async function checkPush(){
+  if(!pushSub() || !("serviceWorker" in navigator)) return renderPush();
+  try{ const reg=await navigator.serviceWorker.ready; const s=await reg.pushManager.getSubscription();
+    if(!s){ localStorage.removeItem(PUSH_KEY); renderPush("La notifica si era disattivata (permesso revocato o iscrizione scaduta): riattivala."); return; }
+    if(s.endpoint!==pushSub().endpoint) lsPut(PUSH_KEY,{endpoint:s.endpoint, created:new Date().toISOString()});
+  }catch(e){}
+  renderPush();
+}
 
 /* ---------- timer di recupero ---------- */
 const R=2*Math.PI*37;
 $("tRing").style.strokeDasharray=R;
 let tEnd=0,tTotal=90,tInt=null,audio=null,wake=null;
-function unlockAudio(){ try{ if(!audio){ const C=window.AudioContext||window.webkitAudioContext; if(C) audio=new C(); } if(audio && audio.state==="suspended") audio.resume(); }catch(e){} }
+function unlockAudio(){ try{ if(!audio){ const A=window.AudioContext||window.webkitAudioContext; if(A) audio=new A(); } if(audio && audio.state==="suspended") audio.resume(); }catch(e){} }
 function beep(){
   try{ if(audio){ [0,0.3,0.6].forEach((t,i)=>{ const o=audio.createOscillator(), g=audio.createGain(); o.frequency.value=i===2?1320:880; o.connect(g); g.connect(audio.destination); const s=audio.currentTime+t; g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(0.35,s+0.02); g.gain.exponentialRampToValueAtTime(0.0001,s+0.22); o.start(s); o.stop(s+0.25); }); } }catch(e){}
   try{ navigator.vibrate && navigator.vibrate([250,120,250,120,400]); }catch(e){}
@@ -607,6 +651,7 @@ function startTimer(sec,next){
   const el=$("timer"); el.hidden=false; el.classList.remove("go");
   $("tLabel").textContent="Recupero "+sec+"″"; $("tNext").textContent=next?"Poi: "+next:"";
   clearInterval(tInt); tInt=setInterval(tick,250); tick();
+  if(sec>=2) pushSchedule(tEnd);
 }
 function tick(){
   const left=(tEnd-Date.now())/1000;
@@ -616,37 +661,14 @@ function tick(){
     clearInterval(tInt); tInt=null; beep();
     $("timer").classList.add("go"); $("tLabel").textContent="Via, tocca a te"; $("tClock").textContent="0:00";
     setTimeout(()=>{ if(!tInt) $("timer").hidden=true; },6000);
+    // con l'app davanti basta il segnale in pagina: la notifica arrivata nel frattempo si chiude
+    if(document.visibilityState==="visible" && pushSub()) setTimeout(()=>navigator.serviceWorker.ready.then(r=>r.getNotifications({tag:"shara-rest"})).then(ns=>ns.forEach(n=>n.close())).catch(()=>{}),2500);
   }
 }
-function stopTimer(){ clearInterval(tInt); tInt=null; $("timer").hidden=true; }
-$("tMinus").addEventListener("click",()=>{ if(tInt){ tEnd-=15000; tick(); } });
-$("tPlus").addEventListener("click",()=>{ if(tInt){ tEnd+=15000; tTotal=Math.max(tTotal,(tEnd-Date.now())/1000); tick(); } });
+function stopTimer(){ const was=!!tInt; clearInterval(tInt); tInt=null; $("timer").hidden=true; if(was) pushCancel(); }
+$("tMinus").addEventListener("click",()=>{ if(tInt){ tEnd-=15000; tick(); if(tInt) pushSchedule(tEnd); } });
+$("tPlus").addEventListener("click",()=>{ if(tInt){ tEnd+=15000; tTotal=Math.max(tTotal,(tEnd-Date.now())/1000); tick(); pushSchedule(tEnd); } });
 $("tSkip").addEventListener("click",stopTimer);
-
-/* ---------- unione dei dati fra dispositivi ----------
-   Pesi: per sessione (data_giorno); note: per esercizio; scheda: intera. In ogni caso vince la copia con "updated" piu' recente.
-   Una sessione eliminata resta come segno di cancellazione (deleted), cosi' l'eliminazione vince anche sugli altri dispositivi. */
-function mergeLogs(a,b){
-  const out=Object.assign({},a);
-  for(const [k,v] of Object.entries(b||{})){ if(v && v.day && v.date && (v.sets||v.deleted) && (!out[k] || (v.updated||"")>(out[k].updated||""))) out[k]=v; }
-  return out;
-}
-function mergeNotes(a,b){
-  const out=Object.assign({},a);
-  for(const [k,v] of Object.entries(b||{})){ if(v && typeof v.text==="string" && (!out[k] || (v.updated||"")>(out[k].updated||""))) out[k]=v; }
-  return out;
-}
-function validPlan(p){ return p && Array.isArray(p.days) && p.days.length && p.days.every(d=>d && d.id && Array.isArray(d.items)); }
-function mergeAll(local,remote){
-  const lp=validPlan(local.plan)?local.plan:null, rp=validPlan(remote.plan)?remote.plan:null;
-  const plan = !lp ? rp : !rp ? lp : ((rp.updated||"")>(lp.updated||"") ? rp : lp);
-  return {log:mergeLogs(local.log,remote.log), notes:mergeNotes(local.notes,remote.notes), plan};
-}
-function writeAll(m){
-  const ok=lsWrite(m.log) && lsPut(NOTES_KEY,m.notes) && (m.plan ? lsPut(PLAN_KEY,m.plan) : true);
-  state.plan=planGet();
-  return ok;
-}
 
 /* ---------- sincronizzazione con Dropbox ----------
    Il file e' /pesi.json nella cartella dell'app (Dropbox > Applicazioni > Scheda SHARA).
@@ -701,16 +723,17 @@ async function dbx(url,headers,body){
 }
 async function pull(){
   const r=await dbx("https://content.dropboxapi.com/2/files/download",{"Dropbox-API-Arg":JSON.stringify({path:"/pesi.json"})});
-  if(r.status===409){ const t=await r.text(); if(t.includes("not_found")) return {rev:null,log:{},notes:{},plan:null}; throw new Error("download: "+t.slice(0,120)); }
+  if(r.status===409){ const t=await r.text(); if(t.includes("not_found")) return {rev:null,log:{},notes:{},plan:null,body:{}}; throw new Error("download: "+t.slice(0,120)); }
   if(!r.ok) throw new Error("download HTTP "+r.status);
   let rev=null; try{ rev=JSON.parse(r.headers.get("Dropbox-API-Result")||"{}").rev||null; }catch(e){}
   const j=await r.json().catch(()=>null);
   if(!j || j.app!=="scheda-shara" || typeof j.log!=="object") throw new Error("pesi.json su Dropbox non è un file di Scheda SHARA: non lo sovrascrivo");
-  return {rev, log:j.log, notes:(j.notes&&typeof j.notes==="object")?j.notes:{}, plan:j.plan||null};
+  const obj=x=>(x&&typeof x==="object")?x:{};
+  return {rev, log:j.log, notes:obj(j.notes), plan:j.plan||null, body:obj(j.body)};
 }
 async function push(m,rev){
   const mode = rev ? {".tag":"update",update:rev} : {".tag":"overwrite"};
-  const body=JSON.stringify({app:"scheda-shara",version:2,updated:new Date().toISOString(),log:m.log,notes:m.notes,plan:m.plan});
+  const body=JSON.stringify({app:"scheda-shara",version:3,updated:new Date().toISOString(),log:m.log,notes:m.notes,plan:m.plan,body:m.body});
   const r=await dbx("https://content.dropboxapi.com/2/files/upload",{"Content-Type":"application/octet-stream","Dropbox-API-Arg":JSON.stringify({path:"/pesi.json",mode,autorename:false,mute:true})},body);
   if(r.status===409) return "conflict";
   if(!r.ok) throw new Error("upload HTTP "+r.status);
@@ -724,17 +747,17 @@ async function runSync(){
   try{
     flushNotes();
     for(let i=0;i<3;i++){
-      const remote=await pull(), local={log:lsAll(), notes:notesAll(), plan:lsGet(PLAN_KEY,null)}, m=mergeAll(local,remote);
-      if(!same(m,local)){
-        const cur=state.date+"_"+state.dayId, ae=document.activeElement, focused=ae && ae.closest && ae.closest("#list");
+      const remote=await pull(), local=localAll(), m=C.mergeAll(local,remote);
+      if(!same(m,{log:local.log,notes:local.notes,plan:local.plan,body:local.body})){
+        const cur=state.date+"_"+state.dayId, ae=document.activeElement, focused=ae && ae.closest && ae.closest("#list,#vBody");
         const changedLog=Object.keys(m.log).filter(k=>!same(m.log[k],local.log[k]));
         writeAll(m);
-        const onlyMine = same(m.notes,local.notes) && same(m.plan,local.plan) && changedLog.length===1 && changedLog[0]===cur;
+        const onlyMine = same(m.notes,local.notes) && same(m.plan,local.plan) && same(m.body,local.body) && changedLog.length===1 && changedLog[0]===cur;
         if(state.editing){ /* niente ridisegno mentre si modifica la scheda */ }
         else if(!(focused && onlyMine)) reloadAll();
         else renderWeek();
       }
-      if(same(m,{log:remote.log,notes:remote.notes,plan:remote.plan})) break;
+      if(same(m,{log:remote.log,notes:remote.notes,plan:remote.plan,body:remote.body})) break;
       if(await push(m,remote.rev)==="ok") break;
     }
     sync.last=new Date();
@@ -784,8 +807,11 @@ async function bootSync(){
   renderSync(); runSync();
 }
 
+$("bDate").value=state.date; $("bDate").max=state.date;
 openDay(state.dayId);
+try{ const v=sessionStorage.getItem("shara-view"); if(v==="diary"||v==="body") setView(v); }catch(e){}
 bootSync();
+checkPush();
 if(!lsWrite(lsAll())) setStatus("Attenzione: questo browser non permette di salvare i dati (navigazione privata?).");
 if("serviceWorker" in navigator && location.protocol==="https:"){
   /* Quando si attiva una versione nuova dell'app la pagina si ricarica da sola, dopo aver salvato;

@@ -1,0 +1,18 @@
+name = "scheda-shara-push"
+main = "src/worker.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://angelospano1987-cloud.github.io"
+# Soggetto VAPID: un URL dell'app, non un indirizzo email.
+VAPID_SUBJECT = "https://angelospano1987-cloud.github.io/scheda-shara/"
+# Chiave pubblica: la stessa che va in config.js. La privata sta solo nel segreto VAPID_PRIVATE_JWK (wrangler secret put).
+VAPID_PUBLIC_KEY = ""
+
+[[durable_objects.bindings]]
+name = "TIMERS"
+class_name = "RestTimer"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["RestTimer"]

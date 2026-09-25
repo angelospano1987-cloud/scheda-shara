@@ -238,6 +238,51 @@ details.hist summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--i
 .ef input:focus,.ef textarea:focus,.mynote textarea:focus{outline:none;border-color:var(--accent)}
 .ed-act,.ed-save{display:flex;gap:8px;flex-wrap:wrap}
 .ed-save{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));background:var(--bg);padding:8px 0;z-index:5}
+
+/* navigazione fra le viste */
+.vnav{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:4px}
+.vnav button{appearance:none;border:0;background:transparent;color:var(--ink-2);border-radius:9px;padding:9px 6px;font:600 15px var(--body);cursor:pointer}
+.vnav button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow);outline:1px solid var(--line)}
+.view{display:flex;flex-direction:column;gap:18px}
+.vh{margin:0;font-family:var(--display);font-size:28px;text-transform:uppercase;letter-spacing:.01em}
+.vsub{margin:-10px 0 0;font-size:14px;color:var(--ink-2)}
+
+/* record */
+.recs{display:flex;flex-direction:column;gap:6px}
+.recs:empty{display:none}
+.newrec{border:1px solid var(--green);background:var(--surface-2);border-radius:10px;padding:8px 10px;font-size:14px}
+.newrec b{color:var(--green)}
+.recinfo{font-size:13px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+/* diario */
+.dmonth{margin:8px 0 0;font-family:var(--display);font-size:18px;text-transform:uppercase;color:var(--ink-3);letter-spacing:.04em}
+.dentry{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:8px}
+.dentry summary{cursor:pointer;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;list-style:none}
+.dentry summary::-webkit-details-marker{display:none}
+.ddot{width:12px;height:12px;border-radius:50%;background:var(--pc);flex:none}
+.dtitle{font-weight:600;text-transform:capitalize}
+.dmeta{font-size:13px;color:var(--ink-3);font-variant-numeric:tabular-nums;flex-basis:100%;padding-left:22px}
+.ditems{margin:10px 0;padding-left:22px;display:grid;gap:6px;font-size:14px}
+.ditems b{display:block}
+.ditems span{color:var(--ink-2);font-variant-numeric:tabular-nums}
+
+/* corpo */
+.bform{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.bgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:420px){.bgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.bsel{max-width:220px}
+.ef select{width:100%;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:10px;padding:9px 10px;font:500 16px var(--body)}
+
+/* archivio delle schede */
+.ed-arch{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.ed-arch h3{margin:0;font-family:var(--display);font-size:18px;text-transform:uppercase}
+.arch{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.arch>li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.arch-h{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px}
+.arch-h .row{display:flex;gap:6px}
+.arch-items{margin:8px 0 0;padding-left:20px;font-size:14px;display:grid;gap:4px}
+.arch-items span{color:var(--ink-3);font-variant-numeric:tabular-nums}
+.hist-legend b.up{color:var(--green)}.hist-legend b.down{color:var(--red)}
 .backup{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:16px;font-size:14px;color:var(--ink-2)}
 .backup .row{display:flex;gap:8px;flex-wrap:wrap}
 .lbtn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 14px;font:600 14px var(--body);cursor:pointer}
@@ -276,6 +321,13 @@ details.hist summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--i
   </header>
   <div class="bar" aria-hidden="true"><i id="pBar"></i></div>
 
+  <nav class="vnav" aria-label="Sezioni">
+    <button type="button" data-view="train" aria-pressed="true">Allenamento</button>
+    <button type="button" data-view="diary" aria-pressed="false">Diario</button>
+    <button type="button" data-view="body" aria-pressed="false">Corpo</button>
+  </nav>
+
+  <div id="vTrain" class="view">
   <section class="week" id="week" aria-label="Riepilogo della settimana"></section>
 
   <nav class="days" id="days" role="tablist" aria-label="Giorno di allenamento"></nav>
@@ -293,6 +345,36 @@ details.hist summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--i
 
   <main class="list" id="list"></main>
   <section class="editor" id="editor" hidden aria-label="Modifica della scheda"></section>
+  </div>
+
+  <section id="vDiary" class="view" hidden aria-label="Diario degli allenamenti">
+    <h2 class="vh">Diario</h2>
+    <p class="vsub">Ogni allenamento registrato, dal più recente. Tocca un giorno per vedere tutte le serie.</p>
+    <div id="diaryList"></div>
+  </section>
+
+  <section id="vBody" class="view" hidden aria-label="Peso e misure">
+    <h2 class="vh">Corpo</h2>
+    <p class="vsub">Peso e misure. Misura sempre nelle stesse condizioni, per esempio al mattino a digiuno.</p>
+    <div class="bform">
+      <label class="ef"><span>Data</span><input type="date" id="bDate"></label>
+      <div class="bgrid" id="bFields"></div>
+      <div class="row"><button class="lbtn primary" id="bSave" type="button">Salva misure</button></div>
+      <p class="status" id="bMsg" aria-live="polite"></p>
+    </div>
+    <label class="ef bsel"><span>Grafico</span><select id="bSel"></select></label>
+    <div id="bChart"></div>
+    <div id="bTable"></div>
+  </section>
+
+  <section class="backup sync" aria-label="Notifica di fine recupero">
+    <h2 class="sync-h">Notifica di fine recupero</h2>
+    <p class="status" id="pushMsg" aria-live="polite"></p>
+    <div class="row">
+      <button class="lbtn primary" id="pushOn" type="button" hidden>Attiva la notifica</button>
+      <button class="lbtn" id="pushOff" type="button" hidden>Disattiva</button>
+    </div>
+  </section>
 
   <section class="backup sync" aria-label="Sincronizzazione">
     <h2 class="sync-h">Sincronizzazione telefono e PC</h2>
@@ -315,7 +397,7 @@ details.hist summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--i
   <section class="backup" aria-label="Copia dei dati">
     <p class="status" id="status">I pesi restano salvati su questo dispositivo.</p>
     <div class="row">
-      <button class="lbtn" id="bExport" type="button">Esporta copia dei pesi</button>
+      <button class="lbtn" id="bExport" type="button">Esporta copia dei dati</button>
       <label class="lbtn" for="bImport">Importa copia</label>
       <input type="file" id="bImport" accept="application/json,.json" hidden>
     </div>
@@ -341,6 +423,7 @@ details.hist summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--i
 </div>
 
 <script src="config.js"></script>
+<script src="core.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
