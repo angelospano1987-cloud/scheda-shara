@@ -68,7 +68,8 @@ header.top{display:flex;justify-content:space-between;align-items:flex-end;gap:1
 .day .txt{min-width:0}
 @media (max-width:420px){.day{flex-direction:column;align-items:flex-start;gap:8px}.plate{width:30px;height:30px}.plate::after{inset:11px}}
 
-.focus{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.focus{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.focus .today{display:block}
 .focus h2{font-family:var(--display);font-size:28px;margin:0;text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
 .focus .today{font-size:13px;color:var(--ink-2)}
 
@@ -160,6 +161,83 @@ details.hist summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--i
 .hist-tbl th{position:sticky;top:0;background:var(--surface-2);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
 .hist-tbl tr:last-child td{border-bottom:0}
 .hist-tbl em{font-style:normal;font-size:11px;color:var(--accent-ink);background:var(--accent);border-radius:999px;padding:1px 6px;margin-left:4px}
+
+/* riepilogo della settimana */
+.week{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.wk-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.wk-head h2{margin:0;font-family:var(--display);font-size:22px;text-transform:uppercase;letter-spacing:.01em}
+.wk-head span{font-size:13px;color:var(--ink-3)}
+.wk-days{display:flex;gap:14px;flex-wrap:wrap}
+.wk-dot{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-3)}
+.wk-dot i{width:14px;height:14px;border-radius:50%;border:2px solid var(--pc)}
+.wk-dot.on{color:var(--ink)}
+.wk-dot.on i{background:var(--pc)}
+.wk-kpi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.wk-kpi div{background:var(--surface-2);border-radius:10px;padding:6px 10px;min-width:0}
+.wk-kpi span,.wk-kpi small{display:block;font-size:11px;color:var(--ink-3);letter-spacing:.04em}
+.wk-kpi span{text-transform:uppercase;letter-spacing:.06em}
+.wk-kpi b{display:block;font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wk-bars{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;align-items:end;height:64px}
+.wk-bar{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:3px;min-width:0}
+.wk-bar i{display:block;width:100%;max-width:26px;background:var(--line);border-radius:4px 4px 0 0}
+.wk-bar.cur i{background:var(--accent)}
+.wk-bar small{font-size:10px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+/* carico suggerito */
+.suggs{display:flex;flex-direction:column;gap:6px}
+.sugg{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.sugg.up{border-color:var(--green)}
+.sugg b{display:block;font-size:15px;font-variant-numeric:tabular-nums}
+.sugg.up b{color:var(--green)}
+.sugg small{display:block;font-size:12px;color:var(--ink-3)}
+.lbtn.sm{padding:6px 12px;font-size:13px}
+.lbtn.danger{background:var(--red);border-color:var(--red);color:#fff}
+.lbtn:disabled{opacity:.4;cursor:default}
+
+/* ripetizioni accanto ai kg */
+.pset{display:flex;gap:6px;flex:1;min-width:0}
+.pset .kg{flex:1.4}
+.pset .kg.rp{flex:1}
+.lab-s{display:none}
+@media (max-width:420px){
+  .set{grid-template-columns:30px 1fr 44px;gap:8px}
+  .lab-l{display:none}.lab-s{display:inline}
+  .kg{padding:0 8px}.kg em{display:none}
+  .chk{width:44px}
+  .wk-kpi div{padding:6px 8px}.wk-kpi b{font-size:18px}
+}
+
+/* note personali */
+.mynote{display:flex;flex-direction:column;gap:4px}
+.mynote span{font-size:13px;font-weight:600;color:var(--ink-2)}
+.mynote textarea,.ef textarea{width:100%;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:10px;padding:8px 10px;font:400 16px/1.4 var(--body);resize:vertical}
+
+/* eliminazione dallo storico */
+.del{appearance:none;border:0;background:transparent;color:var(--ink-3);font-size:18px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:6px}
+.del:hover{color:var(--red)}
+.confirm{border:1px solid var(--red);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.confirm p{margin:0;font-size:14px}
+.hist-legend{margin:0;font-size:12px;color:var(--ink-3)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.alt-link{font-size:14px;color:var(--ink-2)}
+
+/* editor della scheda */
+.editor{display:flex;flex-direction:column;gap:14px}
+.ed-top h2{margin:0;font-family:var(--display);font-size:24px;text-transform:uppercase}
+.ed-top p{margin:4px 0 0;font-size:14px;color:var(--ink-2)}
+.ed-msg{margin:0;border:1px solid var(--red);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:14px}
+.ed-item{border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:12px 14px 14px;margin:0;display:flex;flex-direction:column;gap:10px;min-width:0}
+.ed-item legend{font-family:var(--display);font-size:18px;text-transform:uppercase;padding:0 6px}
+.ed-part{display:flex;flex-direction:column;gap:8px}
+.ed-part+.ed-part{border-top:1px dashed var(--line);padding-top:10px}
+.ed-sub{font-size:12px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.ed-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ef{display:flex;flex-direction:column;gap:3px;min-width:0}
+.ef span{font-size:12px;color:var(--ink-3)}
+.ef input{width:100%;min-width:0;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:10px;padding:9px 10px;font:500 16px var(--body)}
+.ef input:focus,.ef textarea:focus,.mynote textarea:focus{outline:none;border-color:var(--accent)}
+.ed-act,.ed-save{display:flex;gap:8px;flex-wrap:wrap}
+.ed-save{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));background:var(--bg);padding:8px 0;z-index:5}
 .backup{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:16px;font-size:14px;color:var(--ink-2)}
 .backup .row{display:flex;gap:8px;flex-wrap:wrap}
 .lbtn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 14px;font:600 14px var(--body);cursor:pointer}
@@ -198,11 +276,13 @@ details.hist summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--i
   </header>
   <div class="bar" aria-hidden="true"><i id="pBar"></i></div>
 
+  <section class="week" id="week" aria-label="Riepilogo della settimana"></section>
+
   <nav class="days" id="days" role="tablist" aria-label="Giorno di allenamento"></nav>
 
-  <div class="focus">
-    <h2 id="focus"></h2>
-    <span class="today" id="today"></span>
+  <div class="focus" id="focusRow">
+    <div><h2 id="focus"></h2><span class="today" id="today"></span></div>
+    <button class="lbtn sm" id="bEdit" type="button">Modifica scheda</button>
   </div>
 
   <details class="warm">
@@ -212,6 +292,7 @@ details.hist summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--i
   </details>
 
   <main class="list" id="list"></main>
+  <section class="editor" id="editor" hidden aria-label="Modifica della scheda"></section>
 
   <section class="backup sync" aria-label="Sincronizzazione">
     <h2 class="sync-h">Sincronizzazione telefono e PC</h2>
