@@ -108,7 +108,8 @@ function saveNow(){
   const dayId=state.dayId, doc=JSON.parse(JSON.stringify(state.session[dayId]));
   doc.updated=new Date().toISOString();
   const all=lsAll(); all[doc.date+"_"+dayId]=doc;
-  setStatus(lsWrite(all) ? "Pesi salvati su questo telefono." : "Salvataggio non riuscito: la memoria del browser non è disponibile (navigazione privata?).");
+  setStatus(lsWrite(all) ? "Pesi salvati su questo dispositivo." : "Salvataggio non riuscito: la memoria del browser non è disponibile (navigazione privata?).");
+  requestSync(2000);
 }
 window.addEventListener("pagehide",()=>{ if(saveTimer){ clearTimeout(saveTimer); saveNow(); } });
 
@@ -332,6 +333,7 @@ $("bImport").addEventListener("change",async e=>{
     if(!lsWrite(all)) throw new Error("memoria");
     state.session={}; state.last={}; openDay(state.dayId);
     setStatus("Copia importata: "+n+" sessioni aggiornate.");
+    requestSync(500);
   }catch(err){ setStatus("Importazione non riuscita: il file non è una copia di Scheda SHARA."); }
 });
 
@@ -368,7 +370,142 @@ $("tMinus").addEventListener("click",()=>{ if(tInt){ tEnd-=15000; tick(); } });
 $("tPlus").addEventListener("click",()=>{ if(tInt){ tEnd+=15000; tTotal=Math.max(tTotal,(tEnd-Date.now())/1000); tick(); } });
 $("tSkip").addEventListener("click",stopTimer);
 
+/* ---------- sincronizzazione con Dropbox ----------
+   Il file e' /pesi.json nella cartella dell'app (Dropbox > Applicazioni > Scheda SHARA).
+   Unione per sessione: vince la copia con "updated" piu' recente. Ogni dispositivo tiene la sua copia completa,
+   quindi un caricamento perso in una corsa fra due dispositivi si ripara alla sincronizzazione successiva. */
+const DROPBOX_APP_KEY = String(window.SHARA_DROPBOX_KEY||"");
+const TK_KEY = "shara-dbx", PKCE_KEY = "shara-dbx-pkce";
+const REDIRECT = location.origin + location.pathname.replace(/index\.html$/,"");
+const sync = { busy:false, again:false, timer:null, last:null };
+function tkGet(){ try{ return JSON.parse(localStorage.getItem(TK_KEY)||"null"); }catch(e){ return null; } }
+function tkSet(t){ try{ t ? localStorage.setItem(TK_KEY,JSON.stringify(t)) : localStorage.removeItem(TK_KEY); }catch(e){} }
+function b64url(bytes){ let s=""; bytes.forEach(b=>s+=String.fromCharCode(b)); return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
+async function pkceStart(withRedirect){
+  const verifier=b64url(crypto.getRandomValues(new Uint8Array(48)));
+  const challenge=b64url(new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(verifier))));
+  const st=b64url(crypto.getRandomValues(new Uint8Array(12)));
+  try{ localStorage.setItem(PKCE_KEY,JSON.stringify({verifier,state:st,redirect:withRedirect})); }catch(e){}
+  const q=new URLSearchParams({client_id:DROPBOX_APP_KEY,response_type:"code",code_challenge:challenge,code_challenge_method:"S256",token_access_type:"offline"});
+  if(withRedirect){ q.set("redirect_uri",REDIRECT); q.set("state",st); }
+  return "https://www.dropbox.com/oauth2/authorize?"+q.toString();
+}
+async function tokenCall(params){
+  const r=await fetch("https://api.dropboxapi.com/oauth2/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams(Object.assign({client_id:DROPBOX_APP_KEY},params))});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok || !j.access_token){ const e=new Error(j.error_description||j.error||("HTTP "+r.status)); e.grant=(j.error==="invalid_grant"); throw e; }
+  return j;
+}
+async function finishAuth(code){
+  let p=null; try{ p=JSON.parse(localStorage.getItem(PKCE_KEY)||"null"); }catch(e){}
+  if(!p) throw new Error("Accesso scaduto: premi di nuovo «Collega Dropbox».");
+  const params={grant_type:"authorization_code",code:code.trim(),code_verifier:p.verifier};
+  if(p.redirect) params.redirect_uri=REDIRECT;
+  const j=await tokenCall(params);
+  tkSet({refresh:j.refresh_token, access:j.access_token, exp:Date.now()+(j.expires_in||14400)*1000});
+  try{ localStorage.removeItem(PKCE_KEY); }catch(e){}
+}
+async function accessToken(force){
+  const t=tkGet(); if(!t) return null;
+  if(!force && t.access && t.exp>Date.now()+60000) return t.access;
+  try{
+    const j=await tokenCall({grant_type:"refresh_token",refresh_token:t.refresh});
+    t.access=j.access_token; t.exp=Date.now()+(j.expires_in||14400)*1000; tkSet(t); return t.access;
+  }catch(e){ if(e.grant){ tkSet(null); renderSync("Dropbox ha revocato l'accesso: collegalo di nuovo."); return null; } throw e; }
+}
+async function dbx(url,headers,body){
+  for(let attempt=0;attempt<2;attempt++){
+    const tok=await accessToken(attempt>0); if(!tok) throw new Error("scollegato");
+    const r=await fetch(url,{method:"POST",headers:Object.assign({Authorization:"Bearer "+tok},headers),body});
+    if(r.status===401 && attempt===0) continue;
+    return r;
+  }
+}
+async function pull(){
+  const r=await dbx("https://content.dropboxapi.com/2/files/download",{"Dropbox-API-Arg":JSON.stringify({path:"/pesi.json"})});
+  if(r.status===409){ const t=await r.text(); if(t.includes("not_found")) return {rev:null,log:{}}; throw new Error("download: "+t.slice(0,120)); }
+  if(!r.ok) throw new Error("download HTTP "+r.status);
+  let rev=null; try{ rev=JSON.parse(r.headers.get("Dropbox-API-Result")||"{}").rev||null; }catch(e){}
+  const j=await r.json().catch(()=>null);
+  if(!j || j.app!=="scheda-shara" || typeof j.log!=="object") throw new Error("pesi.json su Dropbox non è un file di Scheda SHARA: non lo sovrascrivo");
+  return {rev, log:j.log};
+}
+async function push(log,rev){
+  const mode = rev ? {".tag":"update",update:rev} : {".tag":"overwrite"};
+  const body=JSON.stringify({app:"scheda-shara",version:1,updated:new Date().toISOString(),log});
+  const r=await dbx("https://content.dropboxapi.com/2/files/upload",{"Content-Type":"application/octet-stream","Dropbox-API-Arg":JSON.stringify({path:"/pesi.json",mode,autorename:false,mute:true})},body);
+  if(r.status===409) return "conflict";
+  if(!r.ok) throw new Error("upload HTTP "+r.status);
+  return "ok";
+}
+function mergeLogs(a,b){
+  const out=Object.assign({},a);
+  for(const [k,v] of Object.entries(b||{})){ if(v && v.day && v.date && v.sets && (!out[k] || (v.updated||"")>(out[k].updated||""))) out[k]=v; }
+  return out;
+}
+const same=(x,y)=>JSON.stringify(x)===JSON.stringify(y);
+function requestSync(delay){ if(!tkGet()) return; clearTimeout(sync.timer); sync.timer=setTimeout(runSync,delay||0); }
+async function runSync(){
+  if(!tkGet() || !DROPBOX_APP_KEY) return;
+  if(sync.busy){ sync.again=true; return; }
+  sync.busy=true; renderSync("Sincronizzazione in corso…");
+  try{
+    for(let i=0;i<3;i++){
+      const remote=await pull(), local=lsAll(), merged=mergeLogs(local,remote.log);
+      const localChanged=!same(merged,local);
+      if(localChanged){
+        lsWrite(merged);
+        const cur=state.date+"_"+state.dayId, focused=document.activeElement && document.activeElement.closest && document.activeElement.closest("#list");
+        const changed=Object.keys(merged).filter(k=>!same(merged[k],local[k]));
+        if(!(focused && changed.length===1 && changed[0]===cur)){ stopVideos(); state.session={}; state.last={}; openDay(state.dayId); }
+      }
+      if(same(merged,remote.log)) break;
+      if(await push(merged,remote.rev)==="ok") break;
+    }
+    sync.last=new Date();
+    renderSync();
+  }catch(e){
+    renderSync(navigator.onLine===false ? "Senza rete: sincronizzo appena torna la connessione." : "Sincronizzazione non riuscita ("+e.message+"). I pesi restano su questo dispositivo.");
+  }finally{
+    sync.busy=false;
+    if(sync.again){ sync.again=false; requestSync(500); }
+  }
+}
+function renderSync(msg){
+  const on=!!tkGet(), cfg=!!DROPBOX_APP_KEY;
+  $("syncOff").hidden=on || !cfg; $("syncOn").hidden=!on; $("syncNoCfg").hidden=cfg;
+  $("syncMsg").textContent = msg || (on ? (sync.last ? "Dropbox collegato · ultima sincronizzazione alle "+sync.last.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"}) : "Dropbox collegato.") : (cfg ? "Collega Dropbox per avere gli stessi pesi su telefono e PC." : ""));
+}
+$("sConnect").addEventListener("click",async()=>{ location.href=await pkceStart(true); });
+$("sCodeStart").addEventListener("click",async()=>{ const url=await pkceStart(false); window.open(url,"_blank","noopener"); $("sCodeBox").hidden=false; $("sCode").focus(); });
+$("sCodeOk").addEventListener("click",async()=>{
+  const c=$("sCode").value; if(!c.trim()) return;
+  try{ await finishAuth(c); $("sCode").value=""; $("sCodeBox").hidden=true; renderSync(); runSync(); }
+  catch(e){ renderSync("Codice non valido o scaduto: richiedine uno nuovo."); }
+});
+$("sNow").addEventListener("click",()=>runSync());
+$("sOff").addEventListener("click",async()=>{
+  const t=await accessToken().catch(()=>null);
+  if(t) fetch("https://api.dropboxapi.com/2/auth/token/revoke",{method:"POST",headers:{Authorization:"Bearer "+t}}).catch(()=>{});
+  tkSet(null); renderSync("Dropbox scollegato. I pesi restano su questo dispositivo e nel file su Dropbox.");
+});
+window.addEventListener("online",()=>requestSync(500));
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") requestSync(300); });
+
+async function bootSync(){
+  const q=new URLSearchParams(location.search);
+  if(q.get("code") || q.get("error")){
+    history.replaceState(null,"",REDIRECT);
+    let p=null; try{ p=JSON.parse(localStorage.getItem(PKCE_KEY)||"null"); }catch(e){}
+    if(q.get("error")) renderSync("Collegamento a Dropbox annullato.");
+    else if(!p || q.get("state")!==p.state) renderSync("Collegamento non valido: premi di nuovo «Collega Dropbox».");
+    else { try{ await finishAuth(q.get("code")); }catch(e){ renderSync("Collegamento non riuscito ("+e.message+")."); return; } }
+  }
+  renderSync(); runSync();
+}
+
 openDay(state.dayId);
+bootSync();
 if(!lsWrite(lsAll())) setStatus("Attenzione: questo browser non permette di salvare i pesi (navigazione privata?).");
 if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 })();
