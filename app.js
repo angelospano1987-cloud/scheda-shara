@@ -168,7 +168,7 @@ function renderList(day){
     const setRows=rows.map((r,s)=>
       '<div class="set'+(r.done?' done':'')+'">'+
         '<span class="lab">Serie '+(s+1)+'</span>'+
-        '<div class="kgs">'+it.parts.map((p,pi)=>
+        '<div class="kgs'+(multi?' multi':'')+'">'+it.parts.map((p,pi)=>
           '<label class="kg'+(multi?' multi':'')+'">'+(multi?'<small>'+p.short+'</small>':'')+
           '<input inputmode="decimal" autocomplete="off" placeholder="—" aria-label="Chili, '+p.name+', serie '+(s+1)+'" data-it="'+it.id+'" data-s="'+s+'" data-p="'+pi+'" value="'+(r.kg[pi]||"")+'"><em>kg</em></label>').join("")+
         '</div>'+
@@ -476,8 +476,13 @@ function renderSync(msg){
   $("syncOff").hidden=on || !cfg; $("syncOn").hidden=!on; $("syncNoCfg").hidden=cfg;
   $("syncMsg").textContent = msg || (on ? (sync.last ? "Dropbox collegato · ultima sincronizzazione alle "+sync.last.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"}) : "Dropbox collegato.") : (cfg ? "Collega Dropbox per avere gli stessi pesi su telefono e PC." : ""));
 }
-$("sConnect").addEventListener("click",async()=>{ location.href=await pkceStart(true); });
-$("sCodeStart").addEventListener("click",async()=>{ const url=await pkceStart(false); window.open(url,"_blank","noopener"); $("sCodeBox").hidden=false; $("sCode").focus(); });
+/* Nell'app installata su iPhone il ritorno da Dropbox atterra in Safari, che ha una memoria separata:
+   li' si usa il flusso con codice da incollare. */
+const IOS_STANDALONE = window.navigator.standalone === true;
+async function startCodeFlow(){ const url=await pkceStart(false); window.open(url,"_blank","noopener"); $("sCodeBox").hidden=false; renderSync("Accedi a Dropbox nella pagina che si è aperta, copia il codice che ti mostra e incollalo qui sotto."); }
+$("sConnect").addEventListener("click",async()=>{ if(IOS_STANDALONE) return startCodeFlow(); location.href=await pkceStart(true); });
+$("sCodeStart").addEventListener("click",startCodeFlow);
+if(IOS_STANDALONE) $("sCodeStart").hidden=true;
 $("sCodeOk").addEventListener("click",async()=>{
   const c=$("sCode").value; if(!c.trim()) return;
   try{ await finishAuth(c); $("sCode").value=""; $("sCodeBox").hidden=true; renderSync(); runSync(); }

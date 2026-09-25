@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Scheda SHARA</title>
 <meta name="description" content="Scheda di allenamento con video, registro dei pesi e timer di recupero.">
-<meta name="theme-color" content="#101215">
+<meta name="theme-color" content="#EBEDF0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101215" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Scheda SHARA">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="manifest" href="manifest.webmanifest">
@@ -123,6 +124,7 @@ details.how ul{margin:8px 0 0;padding-left:20px;display:grid;gap:4px;font-size:1
 .kg{position:relative}
 .kg small{position:absolute;left:10px;top:4px;font-size:10px;line-height:1;color:var(--ink-3);white-space:nowrap;letter-spacing:.04em;text-transform:uppercase}
 .kg.multi input{padding:16px 0 6px}
+@media (max-width:400px){.kgs.multi{flex-direction:column;gap:6px}}
 .kg input{flex:1;width:100%;min-width:0;border:0;background:transparent;color:var(--ink);font:600 18px/1 var(--body);padding:10px 0;font-variant-numeric:tabular-nums;text-align:right;outline:none}
 .kg:focus-within{border-color:var(--accent)}
 .kg input::placeholder{color:var(--ink-3);font-weight:400}
@@ -165,7 +167,7 @@ details.hist summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--i
 .sync .status{font-size:14px;color:var(--ink-2)}
 .sync-h{margin:0;font-family:var(--display);font-size:22px;text-transform:uppercase;letter-spacing:.01em;color:var(--ink)}
 .lbtn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.code{flex:1 1 200px;min-width:0;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 12px;font:500 15px var(--body)}
+.code{flex:1 1 200px;min-width:0;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 12px;font:500 16px var(--body)}
 
 /* timer di recupero */
 .timer{position:fixed;left:0;right:0;bottom:0;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);z-index:10;box-shadow:0 -6px 24px rgba(0,0,0,.25)}
