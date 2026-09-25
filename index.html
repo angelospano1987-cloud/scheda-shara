@@ -134,6 +134,30 @@ details.how ul{margin:8px 0 0;padding-left:20px;display:grid;gap:4px;font-size:1
 .last{font-size:13px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 .last b{color:var(--ink-2);font-weight:600}
 
+details.hist{border-top:1px solid var(--line);padding-top:12px}
+details.hist summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--ink-2)}
+.hist-body{display:flex;flex-direction:column;gap:16px;margin-top:12px}
+.hist-part{display:flex;flex-direction:column;gap:10px}
+.hist-empty{margin:0;font-size:14px;color:var(--ink-3)}
+.hist-kpi{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.hist-kpi div{background:var(--surface-2);border-radius:10px;padding:6px 10px;min-width:0}
+.hist-kpi span{display:block;font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.hist-kpi b{display:block;font-size:15px;font-variant-numeric:tabular-nums}
+.hist-kpi b.up{color:var(--green)}
+.hist-kpi b.down{color:var(--red)}
+.spark{width:100%;max-width:100%;height:auto;display:block}
+.spark .grid{stroke:var(--line);stroke-width:1;stroke-dasharray:3 4}
+.spark .ln{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.spark .pt{fill:var(--surface);stroke:var(--accent);stroke-width:2}
+.spark .pt.end{fill:var(--accent)}
+.spark .ax{fill:var(--ink-3);font:12px var(--body);font-variant-numeric:tabular-nums}
+.hist-tbl{overflow-x:auto;max-height:260px;overflow-y:auto;border:1px solid var(--line);border-radius:10px}
+.hist-tbl table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.hist-tbl th,.hist-tbl td{padding:7px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+.hist-tbl th:first-child,.hist-tbl td:first-child{text-align:left}
+.hist-tbl th{position:sticky;top:0;background:var(--surface-2);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.hist-tbl tr:last-child td{border-bottom:0}
+.hist-tbl em{font-style:normal;font-size:11px;color:var(--accent-ink);background:var(--accent);border-radius:999px;padding:1px 6px;margin-left:4px}
 .backup{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:16px;font-size:14px;color:var(--ink-2)}
 .backup .row{display:flex;gap:8px;flex-wrap:wrap}
 .lbtn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 14px;font:600 14px var(--body);cursor:pointer}

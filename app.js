@@ -185,6 +185,7 @@ function renderList(day){
       (it.note?'<p class="note">'+it.note+'</p>':'')+
       parts+
       '<div class="sets">'+setRows+'</div>'+lastTxt+
+      '<details class="hist" data-it="'+it.id+'"><summary>Storico pesi</summary><div class="hist-body"></div></details>'+
     '</article>';
   }).join("");
   renderProgress();
@@ -211,7 +212,62 @@ $("list").addEventListener("input",e=>{
   if(clean!==t.value) t.value=clean;
   state.session[state.dayId].sets[t.dataset.it][+t.dataset.s].kg[+t.dataset.p]=clean;
   scheduleSave();
+  const h=t.closest(".ex").querySelector("details.hist");
+  if(h && h.open) fillHist(h);
 });
+
+/* ---------- storico pesi per esercizio ---------- */
+const num = x => { const n=parseFloat(x); return isFinite(n) ? n : null; };
+const kgFmt = n => (Math.round(n*10)/10).toLocaleString("it-IT");
+function shortDate(iso){ const [y,m,d]=iso.split("-").map(Number); return new Date(y,m-1,d).toLocaleDateString("it-IT",{day:"numeric",month:"short"}); }
+/* Sessioni in cui l'esercizio ha almeno un peso, dalla piu' vecchia; oggi preso dallo stato vivo, non dal salvato. */
+function histRows(dayId,it){
+  const byDate={};
+  Object.values(lsAll()).forEach(d=>{ if(d && d.day===dayId && d.sets && Array.isArray(d.sets[it.id])) byDate[d.date]=d.sets[it.id]; });
+  byDate[state.date]=state.session[dayId].sets[it.id];
+  return Object.keys(byDate).sort().map(date=>({date, parts:it.parts.map((_,pi)=>byDate[date].map(r=>num(((r&&r.kg)||[])[pi])))}))
+    .filter(r=>r.parts.some(p=>p.some(v=>v!==null)));
+}
+function sparkline(points){
+  const W=300,H=96,L=34,R=10,T=12,B=22;
+  const vals=points.map(p=>p.v), lo=Math.min(...vals), hi=Math.max(...vals), span=(hi-lo)||1;
+  const x=i=>L+(points.length===1?(W-L-R)/2:i*(W-L-R)/(points.length-1));
+  const y=v=>T+(H-T-B)*(1-(v-(hi===lo?lo-0.5:lo))/(hi===lo?1:span));
+  const pts=points.map((p,i)=>x(i).toFixed(1)+","+y(p.v).toFixed(1)).join(" ");
+  const lastI=points.length-1;
+  return '<svg class="spark" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Peso massimo per sessione, da '+kgFmt(vals[0])+' a '+kgFmt(vals[lastI])+' kg">'+
+    '<line class="grid" x1="'+L+'" x2="'+(W-R)+'" y1="'+y(hi).toFixed(1)+'" y2="'+y(hi).toFixed(1)+'"/>'+
+    '<line class="grid" x1="'+L+'" x2="'+(W-R)+'" y1="'+y(lo).toFixed(1)+'" y2="'+y(lo).toFixed(1)+'"/>'+
+    '<text class="ax" x="'+(L-6)+'" y="'+(y(hi)+4).toFixed(1)+'" text-anchor="end">'+kgFmt(hi)+'</text>'+
+    (hi!==lo?'<text class="ax" x="'+(L-6)+'" y="'+(y(lo)+4).toFixed(1)+'" text-anchor="end">'+kgFmt(lo)+'</text>':'')+
+    (points.length>1?'<polyline class="ln" points="'+pts+'"/>':'')+
+    points.map((p,i)=>'<circle class="'+(i===lastI?'pt end':'pt')+'" cx="'+x(i).toFixed(1)+'" cy="'+y(p.v).toFixed(1)+'" r="'+(i===lastI?4.5:3)+'"/>').join("")+
+    '<text class="ax" x="'+x(0).toFixed(1)+'" y="'+(H-6)+'" text-anchor="'+(points.length===1?'middle':'start')+'">'+shortDate(points[0].date)+'</text>'+
+    (points.length>1?'<text class="ax" x="'+x(lastI).toFixed(1)+'" y="'+(H-6)+'" text-anchor="end">'+shortDate(points[lastI].date)+'</text>':'')+
+  '</svg>';
+}
+function fillHist(det){
+  const day=dayOf(state.dayId), it=day.items.find(x=>x.id===det.dataset.it);
+  const rows=histRows(day.id,it), body=det.querySelector(".hist-body");
+  if(!rows.length){ body.innerHTML='<p class="hist-empty">Ancora nessun peso registrato per questo esercizio.</p>'; return; }
+  body.innerHTML=it.parts.map((p,pi)=>{
+    const pr=rows.map(r=>({date:r.date, sets:r.parts[pi], max:Math.max(...r.parts[pi].filter(v=>v!==null))})).filter(r=>isFinite(r.max));
+    if(!pr.length) return it.parts.length>1?'<p class="hist-empty">'+p.name+': nessun peso registrato.</p>':'';
+    const first=pr[0], last=pr[pr.length-1], diff=last.max-first.max, best=Math.max(...pr.map(r=>r.max));
+    const trend = pr.length<2 ? "Prima sessione registrata" :
+      (diff>0?"+":diff<0?"−":"±")+kgFmt(Math.abs(diff))+" kg dal "+shortDate(first.date);
+    const nSets=it.sets;
+    return '<div class="hist-part">'+
+      (it.parts.length>1?'<div class="part-name">'+p.name+'</div>':'')+
+      '<div class="hist-kpi"><div><span>Ultimo massimo</span><b>'+kgFmt(last.max)+' kg</b></div><div><span>Record</span><b>'+kgFmt(best)+' kg</b></div><div><span>Andamento</span><b class="'+(diff>0?'up':diff<0?'down':'')+'">'+trend+'</b></div></div>'+
+      sparkline(pr.map(r=>({date:r.date,v:r.max})))+
+      '<div class="hist-tbl"><table><thead><tr><th>Data</th>'+Array.from({length:nSets},(_,s)=>'<th>S'+(s+1)+'</th>').join("")+'<th>Max</th></tr></thead><tbody>'+
+      pr.slice().reverse().map(r=>'<tr><td>'+shortDate(r.date)+(r.date===state.date?' <em>oggi</em>':'')+'</td>'+
+        Array.from({length:nSets},(_,s)=>'<td>'+(r.sets[s]!=null?kgFmt(r.sets[s]):'—')+'</td>').join("")+'<td><b>'+kgFmt(r.max)+'</b></td></tr>').join("")+
+      '</tbody></table></div></div>';
+  }).join("");
+}
+$("list").addEventListener("toggle",e=>{ const d=e.target; if(d.matches && d.matches("details.hist") && d.open) fillHist(d); },true);
 $("list").addEventListener("click",e=>{
   const poster=e.target.closest(".poster");
   if(poster){
