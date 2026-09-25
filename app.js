@@ -12,23 +12,23 @@ const DEFAULT_DAYS = [
         { name:"Hip thrust con bilanciere", short:"Hip thrust", reps:"8", inc:2.5,
           v:[{id:"K2Q6hRKYpMI", ch:"Dieta Flessibile", d:"1:45"},{id:"IHk9Qn8ttX8", ch:"Project inVictus", d:"6:13"}],
           cues:["Scapole appoggiate sul bordo della panca, bilanciere sulle anche con l'imbottitura.","Piedi alla larghezza delle anche: in alto le tibie devono essere verticali.","Spingi con i talloni e stringi i glutei 1 secondo in alto, bacino leggermente in retroversione.","Mento verso il petto: non inarcare la zona lombare."] } ] },
-      { id:"legcurl", sets:3, rest:90, note:"2 secondi di isometria in contrazione a ogni ripetizione.", parts:[
-        { name:"Leg curl", short:"Leg curl", reps:"12", inc:2.5,
+      { id:"legcurl", sets:3, rest:90, note:"Con 2 sec di isometria.", parts:[
+        { name:"leg curl", short:"Leg curl", reps:"12", inc:2.5,
           v:[{id:"1zevKZn_n1E", ch:"Project inVictus", d:"3:36"},{id:"sLsmkdBH3c8", ch:"Wepa Science", d:"1:01"}],
           cues:["Ginocchio allineato al perno della macchina, rullo appena sopra il tallone.","Fletti fino in fondo e tieni la posizione 2 secondi.","Ritorno lento e controllato, senza lasciar cadere il peso.","Bacino fermo sul sedile: non sollevarlo per aiutarti."] } ] },
       { id:"rdl", sets:4, rest:90, note:"", parts:[
         { name:"Mezzo stacco rumeno con bilanciere", short:"Stacco", reps:"8", inc:2.5,
           v:[{id:"w3BVJ0GyBnI", ch:"Lorenzo Gabrielli Coaching", d:"2:58"},{id:"_P3WyVBuSwA", ch:"Project Strength Genova", d:"0:45"}],
           cues:["Parti in piedi, ginocchia leggermente flesse e ferme per tutta la serie.","Porta le anche indietro: il bilanciere scivola a contatto con le cosce.","Schiena neutra e scapole strette; scendi finché senti tirare i femorali (circa metà tibia).","Risali spingendo le anche in avanti e stringendo i glutei."] } ] },
-      { id:"lpsingle", sets:3, rest:90, note:"12 ripetizioni per gamba.", parts:[
-        { name:"Leg press single leg", short:"Leg press", reps:"12", inc:2.5,
+      { id:"lpsingle", sets:3, rest:90, note:"", parts:[
+        { name:"Leg Press single leg", short:"Leg press", reps:"12", inc:2.5,
           v:[{id:"1v8w-I2FEoE", ch:"4fit Sport & Fitness", d:"0:15"},{id:"S6-h9rUZVOY", ch:"Project inVictus", d:"1:10"}],
           cues:["Piede al centro della pedana, ginocchio in linea con la punta del piede.","Scendi finché il bacino resta appoggiato allo schienale.","Non bloccare il ginocchio in estensione completa.","Finisci tutte le ripetizioni con una gamba, poi cambia."] } ] },
       { id:"spress", sets:4, rest:90, note:"Superserie: shoulder press e subito alzate laterali, poi recupero.", parts:[
-        { name:"Shoulder press manubri o macchina ai cavi", short:"Press", reps:"10", inc:2,
+        { name:"Shoulder Press manubri o macchina con cavi (macchine isotoniche)", short:"Press", reps:"10", inc:2,
           v:[{id:"fkW9CxGN4pk", ch:"Dieta Flessibile", d:"1:17"},{id:"AfIJ6VwYR5g", ch:"Project inVictus", d:"4:37"}],
           cues:["Schienale quasi verticale, piedi ben appoggiati a terra.","Manubri all'altezza delle orecchie, gomiti leggermente in avanti.","Spingi verso l'alto senza far battere i manubri.","Addome contratto: la schiena non si inarca."] },
-        { name:"Alzate laterali", short:"Alzate", reps:"10", inc:1,
+        { name:"alzate laterali", short:"Alzate", reps:"10", inc:1,
           v:[{id:"FDCwcG71Yi0", ch:"Umberto Miletto", d:"1:46"},{id:"9yg83KalYTo", ch:"GianzCoach", d:"9:29"}],
           cues:["Busto appena inclinato in avanti, gomiti morbidi.","Sali fino all'altezza delle spalle guidando il movimento con i gomiti.","Niente slancio: scendi in circa 2 secondi.","Spalle basse, lontane dalle orecchie."] } ] }
     ] },
@@ -39,20 +39,20 @@ const DEFAULT_DAYS = [
         { name:"Panca piana con manubri", short:"Panca", reps:"8", inc:2,
           v:[{id:"n8CskqpOPek", ch:"Project inVictus", d:"5:49"},{id:"ON0D6MmOVDo", ch:"Invictus Club Torino", d:"0:52"}],
           cues:["Scapole strette e basse, piedi saldi a terra.","Parti con i manubri sopra le spalle.","Scendi ai lati del petto con i gomiti a circa 45–60° dal busto.","Spingi in alto avvicinando appena i manubri, polsi dritti."] } ] },
-      { id:"flyinc", sets:3, rest:90, note:"Panca inclinata a 45°.", parts:[
-        { name:"Aperture laterali su panca inclinata", short:"Aperture", reps:"12", inc:1,
+      { id:"flyinc", sets:3, rest:90, note:"", parts:[
+        { name:"Aperture laterali (petto) panca inclinata a 45°", short:"Aperture", reps:"12", inc:1,
           v:[{id:"d4rmg47U8HA", ch:"Dieta Flessibile", d:"0:57"},{id:"BwHw56WdXPQ", ch:"Davide Luna", d:"0:53"}],
           cues:["Manubri sopra il petto, palmi rivolti uno verso l'altro.","Apri ad arco con i gomiti leggermente flessi e fermi.","Scendi finché senti allungare il petto, senza superare la linea delle spalle.","Richiudi stringendo il petto, non spingendo con le braccia."] } ] },
-      { id:"cablefly", sets:4, rest:90, note:"Una gamba avanti, busto inclinato, spalla a 45°, braccio in estensione.", parts:[
-        { name:"Croci ai cavi", short:"Croci", reps:"10", inc:2.5,
+      { id:"cablefly", sets:4, rest:90, note:"", parts:[
+        { name:"Croci ai Cavi (una gamba avanti, busto inclinato, spalla 45°, braccio in estensione)", short:"Croci", reps:"10", inc:2.5,
           v:[{id:"V6kI05lcj-g", ch:"Francesco Russillo PT", d:"0:30"},{id:"d7B7bXZr26c", ch:"V Athlete", d:"7:34"}],
           cues:["Un piede avanti per stabilità, busto inclinato in avanti.","Braccia quasi tese, come da scheda.","Porta le mani avanti e insieme descrivendo un arco, stringi 1 secondo.","Torna lentamente senza lasciare che il cavo ti tiri indietro le spalle."] } ] },
       { id:"pushdown", sets:3, rest:90, note:"", parts:[
-        { name:"Push down al cavo con corda", short:"Push down", reps:"10", inc:2.5,
+        { name:"Push down cavo corda (tricipidi)", short:"Push down", reps:"10", inc:2.5,
           v:[{id:"z-GYsUm3f9c", ch:"Project inVictus", d:"4:21"},{id:"vdwP7HxDAo4", ch:"Davide Morelli", d:"0:11"}],
           cues:["Gomiti fermi, attaccati ai fianchi.","Spingi giù fino a braccia tese e apri la corda in fondo.","Risali fino a circa 90° senza sollevare i gomiti.","Busto fermo: niente oscillazioni."] } ] },
       { id:"french", sets:3, rest:90, note:"", parts:[
-        { name:"French press con manubrio", short:"French", reps:"10", inc:2,
+        { name:"French Press con manubrio", short:"French", reps:"10", inc:2,
           v:[{id:"CHyjj0frj54", ch:"Vegan Coach", d:"1:09"},{id:"agVvU-OVZ-o", ch:"Lorenzo Gabrielli Coaching", d:"5:03"}],
           cues:["Gomiti fermi e rivolti in alto: si muove solo l'avambraccio.","Scendi lento finché senti allungare il tricipite.","Estendi le braccia senza bloccare i gomiti di scatto.","Carico moderato: la tecnica viene prima del peso."] } ] }
     ] },
@@ -63,23 +63,23 @@ const DEFAULT_DAYS = [
         { name:"Leg press", short:"Press", reps:"10", inc:5,
           v:[{id:"LMTyPl_oo38", ch:"Project inVictus", d:"3:55"},{id:"mAweueISnMI", ch:"Luigi Colbax", d:"5:48"}],
           cues:["Piedi alla larghezza delle spalle, a metà pedana.","Scendi fino a circa 90° di ginocchio, bacino sempre appoggiato.","Ginocchia in linea con le punte dei piedi.","Non bloccare le ginocchia in alto."] },
-        { name:"Leg extension", short:"Extension", reps:"10", inc:2.5,
+        { name:"leg extension", short:"Extension", reps:"10", inc:2.5,
           v:[{id:"wRSr98kKUsg", ch:"Project inVictus", d:"5:34"},{id:"IZpKu3JyLKs", ch:"TrainingPedia", d:"2:01"}],
           cues:["Regola lo schienale: ginocchio allineato al perno della macchina.","Rullo appoggiato sopra la caviglia.","Estendi fino in fondo e tieni 1 secondo.","Scendi lento, senza far toccare i pesi."] } ] },
       { id:"lat", sets:4, rest:90, note:"", parts:[
         { name:"Lat machine", short:"Lat", reps:"10", inc:2.5,
           v:[{id:"zhCwrtIZaQk", ch:"Luigi Colbax", d:"1:38"},{id:"P8QKoy5sjv8", ch:"Project inVictus", d:"8:01"}],
           cues:["Presa poco più larga delle spalle, cosce bloccate sotto i rulli.","Petto in fuori, busto appena inclinato indietro.","Tira la barra verso la parte alta del petto portando i gomiti giù e indietro.","Risali controllato fino ad allungare bene la schiena."] } ] },
-      { id:"row", sets:3, rest:90, note:"12 ripetizioni per braccio.", parts:[
-        { name:"Rematore singolo con manubrio", short:"Rematore", reps:"12", inc:2,
+      { id:"row", sets:3, rest:90, note:"", parts:[
+        { name:"Rematore Singolo manubri", short:"Rematore", reps:"12", inc:2,
           v:[{id:"-ebafKeAmXs", ch:"Project inVictus", d:"4:46"},{id:"1e-Ks7gpp44", ch:"Invictus Club Torino", d:"0:31"}],
           cues:["Mano e ginocchio appoggiati sulla panca, schiena piatta.","Tira il manubrio verso l'anca, gomito vicino al corpo.","Il busto non ruota durante la tirata.","Scendi fino a braccio disteso, poi ripeti."] } ] },
       { id:"ezcurl", sets:3, rest:90, note:"", parts:[
-        { name:"Curl con bilanciere a zeta (EZ)", short:"Curl EZ", reps:"12", inc:2.5,
+        { name:"Bic Curl con manubrio a zeta", short:"Curl zeta", reps:"12", inc:2.5,
           v:[{id:"6YH1xZZ43Vw", ch:"Project inVictus", d:"7:21"},{id:"7ECvCFpsOik", ch:"Daniele Esposito", d:"0:57"}],
           cues:["Impugna il bilanciere sulle curve, alla larghezza delle spalle.","Gomiti fermi ai fianchi.","Sali senza slanciare il busto.","Scendi controllato fino quasi a braccia tese."] } ] },
-      { id:"inccurl", sets:3, rest:90, note:"Panca inclinata a 60°.", parts:[
-        { name:"Curl su panca inclinata", short:"Curl inclinata", reps:"10", inc:1,
+      { id:"inccurl", sets:3, rest:90, note:"", parts:[
+        { name:"Panca inclinata a 60° bi curl", short:"Curl 60°", reps:"10", inc:1,
           v:[{id:"0o5foceYAnA", ch:"Project inVictus", d:"5:17"},{id:"rr2meFMsgSY", ch:"Dieta Flessibile", d:"1:51"}],
           cues:["Braccia che pendono verticali, leggermente dietro il busto.","Fletti senza portare i gomiti in avanti.","Ruota il palmo verso l'alto mentre sali.","Scendi fino a braccio completamente disteso."] } ] }
     ] }
